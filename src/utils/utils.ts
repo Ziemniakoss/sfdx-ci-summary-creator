@@ -11,3 +11,12 @@ export function mkdirs(path: string) {
   }
 }
 
+export function wrapInArray(a) {
+  if (a == null) {
+    return [];
+  }
+  if (Array.isArray(a)) {
+    return a;
+  }
+  return a;
+}
