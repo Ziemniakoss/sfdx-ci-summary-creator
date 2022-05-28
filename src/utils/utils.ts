@@ -18,5 +18,5 @@ export function wrapInArray(a) {
   if (Array.isArray(a)) {
     return a;
   }
-  return a;
+  return [a];
 }
