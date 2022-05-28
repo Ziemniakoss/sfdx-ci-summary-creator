@@ -1,0 +1,16 @@
+/lib/
+/node_modules/
+
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/lib
+/tmp
+node_modules
+force-app
+sfdx-project.json
+.idea
+/.sfdx/
+/.forceignore
+oclif.manifest.json

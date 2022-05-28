@@ -1,0 +1,52 @@
+{
+  "name": "sfdx-ci-summary-creator",
+  "description": "Creates deployments summary using sfdx hooks",
+  "version": "0.0.1",
+  "author": "Ziemniakoss",
+  "dependencies": {
+    "xml2js": "^0.4.23",
+    "tslib": "^2.4.0"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1",
+    "prettier": "^2",
+    "ts-node": "^10",
+    "typescript": "^4.6.4"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "keywords": [
+    "sfdx-plugin",
+    "hooks",
+    "cicd",
+    "automations",
+    "summaries",
+    "bitbucket",
+    "github"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "hooks": {
+      "postdeploy": [
+        "./lib/hooks/postdeploy/createDeploymentSummary.js"
+      ]
+    },
+    "bin": "sfdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "ziemniakoss/sfdx-ci-summary-creator",
+  "scripts": {
+    "build": "tsc -p .",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}
