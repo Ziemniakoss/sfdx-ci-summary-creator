@@ -124,8 +124,10 @@ export default class MarkdownDeploymentSummaryCreator {
       const coveragePercent = Math.ceil(
         (100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount
       );
+      let coverageTestColor = "green";
       if (coveragePercent < minimumCodeCoverage) {
         allPassedCoverageRequirement = false;
+        coverageTestColor = "red";
       }
       const linesNotCovered = wrapInArray(coverage.locationsNotCovered)
         .map((c) => c.line)
@@ -133,8 +135,12 @@ export default class MarkdownDeploymentSummaryCreator {
       rows.push({
         th: className,
         td: [
-          //@ts-ignore
-          `${coveragePercent}%`,
+          {
+            $: {
+              style: `color: ${coverageTestColor}`,
+            },
+            _: `${coveragePercent}%`,
+          },
           linesNotCovered,
         ],
       });
