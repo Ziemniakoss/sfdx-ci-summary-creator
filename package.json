@@ -1,7 +1,7 @@
 {
   "name": "sfdx-ci-summary-creator",
   "description": "Creates deployments summary using sfdx hooks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Ziemniakoss",
   "dependencies": {
     "xml2js": "^0.4.23",
