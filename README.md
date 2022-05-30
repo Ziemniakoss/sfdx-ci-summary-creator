@@ -28,8 +28,8 @@ as [now you can use markdown reports for step summaries](https://github.blog/202
 
 ![image showing report for successful report](images/mdreport_success.png)
 
-| Variable                                     | Default value        | Description                               |
-| -------------------------------------------- | -------------------- | ----------------------------------------- |
-| CI_SUMMARY_MD_DEPLOYMENT_REPORT_GENERATE     |                      | Set this to any value to generate report  |
-| CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT       | deployment_report.md | File in which report will be created      |
-| CI_SUMMARY_MD_DEPLOYMENT_REPORT_MIN_COVERAGE | 75                   | Minimum coverage to mark class as covered |
+| Variable                                     | Default value                                                        | Description                               |
+| -------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| CI_SUMMARY_MD_DEPLOYMENT_REPORT_GENERATE     |                                                                      | Set this to any value to generate report  |
+| CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT       | contents of GITHUB_STEP_SUMMARY env variable or deployment_report.md | File in which report will be created      |
+| CI_SUMMARY_MD_DEPLOYMENT_REPORT_MIN_COVERAGE | 75                                                                   | Minimum coverage to mark class as covered |

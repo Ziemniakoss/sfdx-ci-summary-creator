@@ -7,6 +7,7 @@ export default class MarkdownDeploymentSummaryCreator {
   async createSummary(deploymentResult: DeploymentResult) {
     const outputFile =
       process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] ??
+      process.env["GITHUB_STEP_SUMMARY"] ??
       "deployment_report.md";
     await promises.writeFile(
       outputFile,
