@@ -5,10 +5,18 @@ import { wrapInArray } from "./utils/utils";
 
 export default class MarkdownDeploymentSummaryCreator {
   async createSummary(deploymentResult: DeploymentResult) {
-    const outputFile =
-      process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] ??
-      process.env["GITHUB_STEP_SUMMARY"] ??
-      "deployment_report.md";
+    let outputFile = "deployment_report.md";
+    if (
+      process.env["GITHUB_STEP_SUMMARY"] != null &&
+      process.env["GITHUB_STEP_SUMMARY"] != ""
+    ) {
+      outputFile = process.env["GITHUB_STEP_SUMMARY"];
+    } else if (
+      process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] != null &&
+      process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] != ""
+    ) {
+      outputFile = process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"];
+    }
     await promises.writeFile(
       outputFile,
       this.createDeploymentSummary(deploymentResult)
@@ -111,7 +119,6 @@ export default class MarkdownDeploymentSummaryCreator {
     if (isNaN(minimumCodeCoverage)) {
       minimumCodeCoverage = 75;
     }
-    console.log(minimumCodeCoverage);
     for (const coverage of wrapInArray(
       deploymentResult.details.runTestResult?.codeCoverage
     )) {
@@ -122,9 +129,13 @@ export default class MarkdownDeploymentSummaryCreator {
       const locationsNotCoveredCount = parseInt(
         coverage.numLocationsNotCovered
       );
-      const coveragePercent = Math.ceil(
-        (100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount
-      );
+      let coveragePercent = 100;
+      if (locationsCount != 0) {
+        coveragePercent = Math.ceil(
+          (100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount
+        );
+      }
+      console.log(coveragePercent)
       let coverageTestColor = "green";
       if (coveragePercent < minimumCodeCoverage) {
         allPassedCoverageRequirement = false;

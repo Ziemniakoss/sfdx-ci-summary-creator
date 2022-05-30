@@ -11,9 +11,9 @@ pipelines for summarizing deployment without need for token generation
 
 ![Image showing how bitbucket displays this kind of report](images/junitsummary.png)
 
-| Variable                             | Default value                    | description                         |
-| ------------------------------------ | -------------------------------- | ----------------------------------- |
-| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH | test-results/sfdx-deployment.xml | Where to output result              |
+| Variable                             | Default value                    | description            |
+| ------------------------------------ | -------------------------------- | ---------------------- |
+| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH | test-results/sfdx-deployment.xml | Where to output result |
 
 ### Markdown deployment report
 
