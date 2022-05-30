@@ -16,7 +16,7 @@ const hook = async function (event: PostDeploymentEvent) {
       new JUnitDeploymentSummaryCreator().createSummary(deploymentResult)
     );
   }
-  if (process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_GENERATE"]) {
+  if (process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_GENERATE"] || process.env["GITHUB_ACTION"]) {
     promises.push(
       new MarkdownDeploymentSummaryCreator().createSummary(deploymentResult)
     );
