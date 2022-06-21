@@ -55,10 +55,10 @@ export default class MarkdownDeploymentSummaryCreator {
     for (const failure of failures) {
       rows.push({
         td: [
-          failure.componentType,
-          failure.fullName,
-          failure.lineNumber,
-          failure.problem,
+          failure.componentType ?? "",
+          failure.fullName ?? "",
+          failure.lineNumber ?? "",
+          failure.problem ?? "",
         ],
       });
     }
@@ -135,7 +135,6 @@ export default class MarkdownDeploymentSummaryCreator {
           (100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount
         );
       }
-      console.log(coveragePercent)
       let coverageTestColor = "green";
       if (coveragePercent < minimumCodeCoverage) {
         allPassedCoverageRequirement = false;
