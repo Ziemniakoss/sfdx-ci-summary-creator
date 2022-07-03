@@ -119,9 +119,10 @@ export default class MarkdownDeploymentSummaryCreator {
     if (isNaN(minimumCodeCoverage)) {
       minimumCodeCoverage = 75;
     }
-    for (const coverage of wrapInArray(
-      deploymentResult.details.runTestResult?.codeCoverage
-    )) {
+    const coverages = wrapInArray(
+      deploymentResult.details.runTestResult.codeCoverage
+    ).sort((first, second) => first.name.localeCompare(second.name));
+    for (const coverage of coverages) {
       const className = coverage.name;
       //@ts-ignore
       const locationsCount = parseInt(coverage.numLocations);
