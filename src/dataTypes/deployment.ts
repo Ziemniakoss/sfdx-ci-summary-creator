@@ -19,7 +19,9 @@ interface CodeLocation {
   time: number | string;
 }
 
-interface CodeCoverageResult {
+export interface CodeCoverageResult {
+  numLocationsNotCovered: string;
+  numLocations: string;
   dmlInfo?: CodeLocation[];
   id: string;
   locationsNotCovered: CodeLocation[];
