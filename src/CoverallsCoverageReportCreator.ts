@@ -17,11 +17,10 @@ const ENV_REPORT_DIR = "CI_SUMMARY_COVERALLS_LOCATION";
 
 export default class CoverallsCoverageReportCreator {
   async createSummary(deploymentResult: DeploymentResult) {
-    const coverage = deploymentResult?.details?.runTestResult?.codeCoverage;
+    const coverage: CodeCoverageResult[] = wrapInArray(
+      deploymentResult?.details?.runTestResult?.codeCoverage
+    );
 
-    if (coverage == null) {
-      return;
-    }
     const sourceFiles = await Promise.all(
       coverage.map((fileCoverage) => this.createSourceFileSummary(fileCoverage))
     );

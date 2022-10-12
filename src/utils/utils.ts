@@ -28,21 +28,37 @@ export async function getProjectRoot(searchStartPath: string): Promise<string> {
   return getProjectRoot(dirname(searchStartPath));
 }
 
-export async function findFile(
-  fileName: string,
-  directory?: string
-): Promise<string | null> {
-  if (directory == null) {
-    directory = await getProjectRoot(process.cwd());
+export async function findFile(fileName: string): Promise<string | null> {
+  const rootProjectDirectory = await getProjectRoot(process.cwd());
+  const projectDirectories: string[] = await promises
+    .readFile(join(rootProjectDirectory, "sfdx-project.json"), "utf-8")
+    .then(JSON.parse)
+    .then((projectDefinition) => {
+      return projectDefinition.packageDirectories.map((projectDir) =>
+        join(rootProjectDirectory, projectDir.path)
+      );
+    });
+  for (const projectDir of projectDirectories) {
+    const foundFileInDir = await findFileInDirectory(fileName, projectDir);
+    if (foundFileInDir != null) {
+      return foundFileInDir;
+    }
   }
+  return null;
+}
+
+async function findFileInDirectory(
+  fileName: string,
+  directory: string
+): Promise<string | null> {
   const dirContent = await promises
     .readdir(directory)
     .then((files) => files.map((file) => join(directory, file)));
-  const conntentsWithProps = await Promise.all(
+  const contentsWithProps = await Promise.all(
     dirContent.map((file) => ({ file, properties: promises.lstat(file) }))
   );
   const dirs = [];
-  for (const p of conntentsWithProps) {
+  for (const p of contentsWithProps) {
     const properties = await p.properties;
     if (properties.isDirectory()) {
       dirs.push(p.file);
@@ -52,7 +68,7 @@ export async function findFile(
   }
 
   const foundFilesInSubdirs = await Promise.all(
-    dirs.map((dirName) => findFile(fileName, dirName))
+    dirs.map((dirName) => findFileInDirectory(fileName, dirName))
   );
   return foundFilesInSubdirs.find((file) => file != null);
 }
