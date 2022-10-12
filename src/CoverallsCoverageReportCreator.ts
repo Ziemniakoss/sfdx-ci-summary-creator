@@ -17,7 +17,7 @@ const ENV_REPORT_DIR = "CI_SUMMARY_COVERALLS_LOCATION";
 
 export default class CoverallsCoverageReportCreator {
   async createSummary(deploymentResult: DeploymentResult) {
-    const coverage:CodeCoverageResult[] = wrapInArray(
+    const coverage: CodeCoverageResult[] = wrapInArray(
       deploymentResult?.details?.runTestResult?.codeCoverage
     );
 
