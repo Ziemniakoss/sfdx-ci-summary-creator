@@ -1,9 +1,17 @@
-import { DeploymentResult } from "./dataTypes/deployment";
 import { Builder } from "xml2js";
-import { mkdirs, wrapInArray } from "./utils/utils";
 import * as path from "path";
 import { dirname } from "path";
 import { promises } from "fs";
+import { DeploymentResult } from "../dataTypes/deployment";
+import { mkdirs, wrapInArray } from "../utils/utils";
+import { ENV_VARS_NAMES } from "../utils/constants";
+import Environment from "../utils/Environment";
+import { ReportGenerator } from "./ReportGenerator";
+import {
+  isDependentClassNeedsRecompilationError,
+  prepareRunTestFailureMessage,
+} from "../utils/formattingUtils";
+
 interface TestCase {
   $: {
     classname: string;
@@ -18,6 +26,7 @@ interface TestCase {
     }
   ];
 }
+
 interface TestSuite {
   $: {
     name: string;
@@ -26,22 +35,28 @@ interface TestSuite {
   };
   testcase: TestCase[];
 }
+
 interface JUnitReport {
   testsuites: {
     testsuite: TestSuite[];
   };
 }
 
-const VAR_WITH_OUTPUT_PATH = "CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH";
+export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
+  constructor(private env: Environment) {}
 
-export default class JUnitDeploymentSummaryCreator {
   private getOutputFile(): string {
-    if (process.env[VAR_WITH_OUTPUT_PATH] != null) {
-      return process.env[VAR_WITH_OUTPUT_PATH];
+    const varNameWithLocation = ENV_VARS_NAMES.JUNIT_REPORT.LOCATION;
+    if (this.env.getVar(varNameWithLocation) != null) {
+      return this.env.getVar(varNameWithLocation);
     }
     return path.join("test-results", "sfdx-deployment.xml");
   }
-  async createSummary(deploymentResult: DeploymentResult) {
+
+  async createReport(
+    deploymentResult: DeploymentResult,
+    writeToDisc = true
+  ): Promise<string> {
     const report: JUnitReport = {
       testsuites: {
         testsuite: await Promise.all([
@@ -50,10 +65,15 @@ export default class JUnitDeploymentSummaryCreator {
         ]),
       },
     };
-    const reportAsXml = new Builder({ cdata: true }).buildObject(report);
-    const outputPath = this.getOutputFile();
-    mkdirs(dirname(outputPath));
-    return promises.writeFile(outputPath, reportAsXml);
+    const reportAsXml: string = new Builder({ cdata: true }).buildObject(
+      report
+    );
+    if (writeToDisc) {
+      const outputPath = this.getOutputFile();
+      mkdirs(dirname(outputPath));
+      await promises.writeFile(outputPath, reportAsXml);
+    }
+    return reportAsXml;
   }
 
   private createDeploymentTestSuite(
@@ -103,7 +123,18 @@ export default class JUnitDeploymentSummaryCreator {
       },
       testcase: [],
     };
-    for (const failure of wrapInArray(testCases.failures)) {
+    let failures = wrapInArray(testCases.failures);
+    if (
+      this.env.getVar(
+        ENV_VARS_NAMES.JUNIT_REPORT
+          .FILTER_TEST_FAILURES_DUE_TO_DEPENDENT_CLASSES
+      ) == "true"
+    ) {
+      failures = failures.filter(
+        (failure) => !isDependentClassNeedsRecompilationError(failure.message)
+      );
+    }
+    for (const failure of failures) {
       const caseForFailure: TestCase = {
         $: {
           classname: failure.name,
@@ -112,12 +143,20 @@ export default class JUnitDeploymentSummaryCreator {
         failure: [
           {
             $: {
-              message: failure.message,
+              message: prepareRunTestFailureMessage(
+                failure.message,
+                deploymentResult
+              ),
             },
-            _: failure.stackTrace,
+            _:
+              failure.stackTrace ??
+              failure.message ??
+              "JSFORCE parsing error, please file issue in repo of sfdx-ci-summary-creator plugin",
           },
         ],
       };
+      if (failure.methodName != null) {
+      }
       testSuite.testcase.push(caseForFailure);
     }
     return testSuite;

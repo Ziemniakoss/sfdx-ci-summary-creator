@@ -87,15 +87,16 @@ export default class MarkdownDeploymentSummaryCreator {
       deployemntResult.details.runTestResult.failures
     )) {
       const testCaseName = `${failure.name}.${failure.methodName}`;
-      const summary = {
-        details: {
-          summary: "Stack trace",
-          pre: failure.stackTrace,
-        },
-      };
-      report += `## ${testCaseName}\n\n${
-        failure.message
-      }\n\n${new Builder().buildObject(summary)}\n\n`;
+      report += `## ${testCaseName}\n\n${failure.message}\n\n`;
+      if (failure.stackTrace) {
+        const summary = {
+          details: {
+            summary: "Stack trace",
+            pre: failure.stackTrace,
+          },
+        };
+        report += `\n\n${new Builder().buildObject(summary)}\n\n`;
+      }
     }
     return report;
   }
