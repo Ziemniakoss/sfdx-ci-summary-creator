@@ -12,7 +12,7 @@ interface PostDeploymentEvent {
 
 const hook = async function (event: PostDeploymentEvent) {
   const deploymentResult = event?.result?.response;
-  const env = new Environment()
+  const env = new Environment();
   if (deploymentResult == null) {
     return;
   }
@@ -27,10 +27,12 @@ const hook = async function (event: PostDeploymentEvent) {
       .createSummary(deploymentResult)
       .catch(printError),
   ];
-  return Promise.all(promises)
+  return (
+    Promise.all(promises)
       .catch(printError)
       // Just in case
-      .catch(()=>{});
+      .catch(() => {})
+  );
 };
 
 function printError(error) {
