@@ -1,8 +1,9 @@
 import { DeploymentResult } from "../../dataTypes/deployment";
-import JUnitDeploymentSummaryCreator from "../../JUnitDeploymentSummaryCreator";
 import MarkdownDeploymentSummaryCreator from "../../MarkdownDeploymentSummaryCreator";
 import CoverallsCoverageReportCreator from "../../CoverallsCoverageReportCreator";
-import * as fs from "fs";
+import {promises} from "fs";
+import JUnitDeploymentSummaryCreator from "../../reportGenerators/JUnitDeploymentSummaryCreator";
+import Environment from "../../utils/Environment";
 
 interface PostDeploymentEvent {
   result: {
@@ -12,25 +13,29 @@ interface PostDeploymentEvent {
 
 const hook = async function (event: PostDeploymentEvent) {
   const deploymentResult = event?.result?.response;
+  const env = new Environment()
   if (deploymentResult == null) {
     return;
   }
+  console.log(JSON.stringify(deploymentResult, null, 4))
   const promises: Promise<any>[] = [
     new MarkdownDeploymentSummaryCreator()
       .createSummary(deploymentResult)
       .catch(printError),
-    new JUnitDeploymentSummaryCreator()
-      .createSummary(deploymentResult)
+    new JUnitDeploymentSummaryCreator(env)
+      .createReport(deploymentResult)
       .catch(printError),
     new CoverallsCoverageReportCreator()
       .createSummary(deploymentResult)
       .catch(printError),
   ];
-  return Promise.all(promises).catch(printError);
+  return Promise.all(promises)
+      .catch(printError)
+      // Just in case
+      .catch(()=>{});
 };
 
 function printError(error) {
-  console.log("AAAAAAAAAA");
   console.error(
     "============================Error in hook======================================="
   );

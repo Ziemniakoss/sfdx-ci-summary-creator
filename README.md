@@ -11,9 +11,10 @@ pipelines for summarizing deployment without need for token generation
 
 ![Image showing how bitbucket displays this kind of report](images/junitsummary.png)
 
-| Variable                             | Default value                    | description            |
-| ------------------------------------ | -------------------------------- | ---------------------- |
-| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH | test-results/sfdx-deployment.xml | Where to output result |
+| Variable                                                  | Default value                    | description                                                                                                                                     |
+|-----------------------------------------------------------|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH                      | test-results/sfdx-deployment.xml | Where to output result                                                                                                                          |
+| CI_SUMMARY_JUNIT_SUMMARY_EXCLUDE_TEST_FAILURES_DEPENDENTS | false                            | Should test fauilures caused by dependent classes compilation be skipped in xml. Setting this to true can reduce report file size significantly |
 
 ### Markdown deployment report
 
@@ -28,7 +29,7 @@ as [now you can use markdown reports for step summaries](https://github.blog/202
 ![image showing report for successful report](images/mdreport_success.png)
 
 | Variable                                     | Default value                                                        | Description                               |
-| -------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+|----------------------------------------------|----------------------------------------------------------------------|-------------------------------------------|
 | CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT       | contents of GITHUB_STEP_SUMMARY env variable or deployment_report.md | File in which report will be created      |
 | CI_SUMMARY_MD_DEPLOYMENT_REPORT_MIN_COVERAGE | 75                                                                   | Minimum coverage to mark class as covered |
 
@@ -49,5 +50,5 @@ What I can guarantee about code coverage is that:
 - same lines won't be covered
 
 | Variable                      | Default value                     | Description                             |
-| ----------------------------- | --------------------------------- | --------------------------------------- |
+|-------------------------------|-----------------------------------|-----------------------------------------|
 | CI_SUMMARY_COVERALLS_LOCATION | deployment_reports/coveralls.json | Place in which report should be created |
