@@ -1,7 +1,6 @@
 import { DeploymentResult } from "../../dataTypes/deployment";
 import MarkdownDeploymentSummaryCreator from "../../MarkdownDeploymentSummaryCreator";
 import CoverallsCoverageReportCreator from "../../CoverallsCoverageReportCreator";
-import {promises} from "fs";
 import JUnitDeploymentSummaryCreator from "../../reportGenerators/JUnitDeploymentSummaryCreator";
 import Environment from "../../utils/Environment";
 
@@ -17,7 +16,6 @@ const hook = async function (event: PostDeploymentEvent) {
   if (deploymentResult == null) {
     return;
   }
-  console.log(JSON.stringify(deploymentResult, null, 4))
   const promises: Promise<any>[] = [
     new MarkdownDeploymentSummaryCreator()
       .createSummary(deploymentResult)
