@@ -31,3 +31,11 @@ jobs:
         run: npm run build
       - name: Check if prepack will work
         run: npm run prepack
+  qodana:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 'Qodana Scan'
+        uses: JetBrains/qodana-action@v2022.2.2
