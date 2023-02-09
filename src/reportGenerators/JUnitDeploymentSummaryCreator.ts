@@ -7,11 +7,6 @@ import { mkdirs, wrapInArray } from "../utils/utils";
 import { ENV_VARS_NAMES } from "../utils/constants";
 import Environment from "../utils/Environment";
 import { ReportGenerator } from "./ReportGenerator";
-import {
-    isDeploymentDependentClassNeedsRecompilationError,
-    isTestDependentClassNeedsRecompilationError,
-    prepareRunTestFailureMessage,
-} from "../utils/formattingUtils";
 
 interface TestCase {
     $: {
@@ -125,10 +120,7 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
                 failure: [
                     {
                         $: {
-                            message: prepareRunTestFailureMessage(
-                                failure.message,
-                                deploymentResult
-                            ),
+                            message: failure.message,
                         },
                         _:
                             failure.stackTrace ??
