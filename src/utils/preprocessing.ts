@@ -1,4 +1,4 @@
-import { DeploymentResult, DeployMessage, RunTestFailure } from "../dataTypes/deployment";
+import { DeploymentResult, DeployMessage } from "../dataTypes/deployment";
 import { wrapInArray } from "./utils";
 
 /**
@@ -22,7 +22,7 @@ export function preprocess(
     copy.details.componentFailures = wrapInArray(copy.details.componentFailures);
     copy.details.componentSuccesses = wrapInArray(copy.details.componentSuccesses);
     copy.details.runTestResult.failures = wrapInArray(copy.details.runTestResult.failures);
-    copy.details.runTestResult.codeCoverage = wrapInArray(copy.details.runTestResult.codeCoverage)
+    copy.details.runTestResult.codeCoverage = wrapInArray(copy.details.runTestResult.codeCoverage);
     if (deleteDependentClassNeedsRecompilationErrors) {
         deleteDeploymentFailuresDueToDependentClasses(copy);
         deleteTestFailuresDueToDependentClasses(copy);

@@ -1,29 +1,31 @@
 import { Builder } from "xml2js";
 import { promises } from "fs";
-import {dirname} from "path";
-import {DeploymentResult} from "../dataTypes/deployment";
-import {ReportGenerator} from "./ReportGenerator";
-import {mkdirs, wrapInArray} from "../utils/utils";
+import { dirname } from "path";
+import { DeploymentResult } from "../dataTypes/deployment";
+import { ReportGenerator } from "./ReportGenerator";
+import { mkdirs, wrapInArray } from "../utils/utils";
 
-export default class MarkdownDeploymentSummaryCreator implements ReportGenerator{
+export default class MarkdownDeploymentSummaryCreator implements ReportGenerator {
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
-        const reportGenerationPromises:Promise<string>[]= [
-            this.createDeploymentSummary(deployment)
-        ]
-        if(deployment.details.componentFailures.length == 0) {
-            reportGenerationPromises.push(this.createTestRunReport(deployment))
+        const reportGenerationPromises: Promise<string>[] = [
+            this.createDeploymentSummary(deployment),
+        ];
+        if (deployment.details.componentFailures.length == 0) {
+            reportGenerationPromises.push(this.createTestRunReport(deployment));
         }
-        if(deployment.details.runTestResult.codeCoverage.length > 0) {
-            reportGenerationPromises.push(this.createCoverageReport(deployment))
+        if (deployment.details.runTestResult.codeCoverage.length > 0) {
+            reportGenerationPromises.push(this.createCoverageReport(deployment));
         }
-        const report =await Promise.all(reportGenerationPromises).then(reportParts => reportParts.join("\n\n"))
+        const report = await Promise.all(reportGenerationPromises).then((reportParts) =>
+            reportParts.join("\n\n")
+        );
 
-        if(writeToDisc) {
-            const outputPath = this.getOutputFile()
-            await  mkdirs(dirname(outputPath))
-            await promises.writeFile(outputPath, report)
+        if (writeToDisc) {
+            const outputPath = this.getOutputFile();
+            await mkdirs(dirname(outputPath));
+            await promises.writeFile(outputPath, report);
         }
-        return report
+        return report;
     }
 
     private getOutputFile() {
@@ -39,10 +41,10 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         ) {
             outputFile = process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"];
         }
-        return outputFile
+        return outputFile;
     }
 
-    private async createDeploymentSummary(deploymentResult: DeploymentResult): Promise<string >{
+    private async createDeploymentSummary(deploymentResult: DeploymentResult): Promise<string> {
         const failures = wrapInArray(deploymentResult.details.componentFailures);
 
         if (failures.length == 0) {
@@ -73,7 +75,7 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         return `# ${FAILURE_EMOJI} Components deployment\n\n${failures.length} components couldn't be deployed\n\n${tableAsXml}`;
     }
 
-    private async createTestRunReport(deploymentResult: DeploymentResult): Promise<string>{
+    private async createTestRunReport(deploymentResult: DeploymentResult): Promise<string> {
         const failuresCount = deploymentResult.details.runTestResult.numFailures;
         if (failuresCount == 0) {
             return `# ${SUCCESS_MARK} Test run summary\n\nAll tests passed\n\n`;
@@ -104,7 +106,7 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         return report;
     }
 
-    private async  createCoverageReport(deploymentResult: DeploymentResult): Promise<string >{
+    private async createCoverageReport(deploymentResult: DeploymentResult): Promise<string> {
         const table = {
             thead: {
                 tr: {
@@ -164,7 +166,6 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         const emoji = allPassedCoverageRequirement ? SUCCESS_MARK : FAILURE_EMOJI;
         return `# ${emoji} Coverage report\n\n${tt}`;
     }
-
 }
 
 const SUCCESS_MARK = "✓";

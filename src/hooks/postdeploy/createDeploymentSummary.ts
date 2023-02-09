@@ -3,8 +3,7 @@ import JUnitDeploymentSummaryCreator from "../../reportGenerators/JUnitDeploymen
 import Environment from "../../utils/Environment";
 import { preprocess } from "../../utils/preprocessing";
 import CoverallsCoverageReportCreator from "../../reportGenerators/CoverallsCoverageReportCreator";
-import MarkdownDeploymentSummaryCreator
-    from "../../reportGenerators/MarkdownDeploymentSummaryCreator";
+import MarkdownDeploymentSummaryCreator from "../../reportGenerators/MarkdownDeploymentSummaryCreator";
 
 interface PostDeploymentEvent {
     result: {

@@ -1,8 +1,8 @@
-import {promises} from "fs";
-import {join, dirname} from "path";
-import {ReportGenerator} from "./ReportGenerator";
-import {CodeCoverageResult, DeploymentResult} from "../dataTypes/deployment";
-import {findFile, getProjectRoot, mkdirs, wrapInArray} from "../utils/utils";
+import { promises } from "fs";
+import { join, dirname } from "path";
+import { ReportGenerator } from "./ReportGenerator";
+import { CodeCoverageResult, DeploymentResult } from "../dataTypes/deployment";
+import { findFile, getProjectRoot, mkdirs, wrapInArray } from "../utils/utils";
 
 interface SourceFile {
     name: string;
@@ -20,22 +20,23 @@ const ENV_REPORT_DIR = "CI_SUMMARY_COVERALLS_LOCATION";
 export default class CoverallsCoverageReportCreator implements ReportGenerator {
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
         const sourceFiles = await Promise.all(
-            deployment.details.runTestResult.codeCoverage.map((fileCoverage) => this.createSourceFileSummary(fileCoverage))
+            deployment.details.runTestResult.codeCoverage.map((fileCoverage) =>
+                this.createSourceFileSummary(fileCoverage)
+            )
         );
         const report: CoverallsReport = {
             service_name: "sfdx-ci-summary-creator",
             source_files: sourceFiles,
         };
-        const reportAsString = JSON.stringify(report)
+        const reportAsString = JSON.stringify(report);
         if (writeToDisc) {
             const outputPath =
                 process.env[ENV_REPORT_DIR] ??
                 join(await getProjectRoot(process.cwd()), "deployment_reports", "coveralls.json");
             await mkdirs(dirname(outputPath));
             await promises.writeFile(outputPath, JSON.stringify(report));
-
         }
-        return reportAsString
+        return reportAsString;
     }
 
     private async createSourceFileSummary(
@@ -81,5 +82,4 @@ export default class CoverallsCoverageReportCreator implements ReportGenerator {
             coverage,
         };
     }
-
 }
