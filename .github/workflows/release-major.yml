@@ -16,7 +16,7 @@ jobs:
             - name: Install dependencies and build
               run: npm ci && npm run build
             - name: Bump version
-              run: npm version major
+              run: git status && npm version major
             - name: Publish package on NPM 📦
               run: npm publish
               env:
