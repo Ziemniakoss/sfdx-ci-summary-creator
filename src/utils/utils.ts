@@ -28,9 +28,9 @@ export async function getProjectRoot(searchStartPath: string): Promise<string> {
     return getProjectRoot(dirname(searchStartPath));
 }
 
-export async function findFile(fileName: string): Promise<string | null> {
+async function getProjectDirectories():Promise<string[]> {
     const rootProjectDirectory = await getProjectRoot(process.cwd());
-    const projectDirectories: string[] = await promises
+    return  promises
         .readFile(join(rootProjectDirectory, "sfdx-project.json"), "utf-8")
         .then(JSON.parse)
         .then((projectDefinition) => {
@@ -38,6 +38,21 @@ export async function findFile(fileName: string): Promise<string | null> {
                 join(rootProjectDirectory, projectDir.path)
             );
         });
+
+}
+
+/**
+ * In normal SFDX command, we would have project object which has fast
+ * project directories discovery. Because we are working from level of hook,
+ * we need to cache this promise to speed up process (basically we are looking
+ * for project directories only once)
+ */
+let sharedProjectDirectoriesDiscoveryPromise:Promise<string[]>
+export async function findFile(fileName: string): Promise<string | null> {
+    if(sharedProjectDirectoriesDiscoveryPromise == null) {
+        sharedProjectDirectoriesDiscoveryPromise = getProjectDirectories()
+    }
+    const projectDirectories = await sharedProjectDirectoriesDiscoveryPromise
     for (const projectDir of projectDirectories) {
         const foundFileInDir = await findFileInDirectory(fileName, projectDir);
         if (foundFileInDir != null) {
