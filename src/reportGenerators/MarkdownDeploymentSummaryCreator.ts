@@ -1,10 +1,32 @@
 import { Builder } from "xml2js";
-import { DeploymentResult } from "./dataTypes/deployment";
 import { promises } from "fs";
-import { wrapInArray } from "./utils/utils";
+import {dirname} from "path";
+import {DeploymentResult} from "../dataTypes/deployment";
+import {ReportGenerator} from "./ReportGenerator";
+import {mkdirs, wrapInArray} from "../utils/utils";
 
-export default class MarkdownDeploymentSummaryCreator {
-    async createSummary(deploymentResult: DeploymentResult) {
+export default class MarkdownDeploymentSummaryCreator implements ReportGenerator{
+    async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
+        const reportGenerationPromises:Promise<string>[]= [
+            this.createDeploymentSummary(deployment)
+        ]
+        if(deployment.details.componentFailures.length == 0) {
+            reportGenerationPromises.push(this.createTestRunReport(deployment))
+        }
+        if(deployment.details.runTestResult.codeCoverage.length > 0) {
+            reportGenerationPromises.push(this.createCoverageReport(deployment))
+        }
+        const report =await Promise.all(reportGenerationPromises).then(reportParts => reportParts.join("\n\n"))
+
+        if(writeToDisc) {
+            const outputPath = this.getOutputFile()
+            await  mkdirs(dirname(outputPath))
+            await promises.writeFile(outputPath, report)
+        }
+        return report
+    }
+
+    private getOutputFile() {
         let outputFile = "deployment_report.md";
         if (
             process.env["GITHUB_STEP_SUMMARY"] != null &&
@@ -17,19 +39,10 @@ export default class MarkdownDeploymentSummaryCreator {
         ) {
             outputFile = process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"];
         }
-        await promises.writeFile(outputFile, this.createDeploymentSummary(deploymentResult));
-
-        if (wrapInArray(deploymentResult.details.componentFailures).length != 0) {
-            return;
-        }
-        return promises
-            .appendFile(outputFile, this.createTestRunReport(deploymentResult))
-            .then(() =>
-                promises.appendFile(outputFile, this.createCoverageReport(deploymentResult))
-            );
+        return outputFile
     }
 
-    private createDeploymentSummary(deploymentResult: DeploymentResult): string {
+    private async createDeploymentSummary(deploymentResult: DeploymentResult): Promise<string >{
         const failures = wrapInArray(deploymentResult.details.componentFailures);
 
         if (failures.length == 0) {
@@ -60,7 +73,7 @@ export default class MarkdownDeploymentSummaryCreator {
         return `# ${FAILURE_EMOJI} Components deployment\n\n${failures.length} components couldn't be deployed\n\n${tableAsXml}`;
     }
 
-    private createTestRunReport(deploymentResult: DeploymentResult): string {
+    private async createTestRunReport(deploymentResult: DeploymentResult): Promise<string>{
         const failuresCount = deploymentResult.details.runTestResult.numFailures;
         if (failuresCount == 0) {
             return `# ${SUCCESS_MARK} Test run summary\n\nAll tests passed\n\n`;
@@ -91,7 +104,7 @@ export default class MarkdownDeploymentSummaryCreator {
         return report;
     }
 
-    private createCoverageReport(deploymentResult: DeploymentResult): string {
+    private async  createCoverageReport(deploymentResult: DeploymentResult): Promise<string >{
         const table = {
             thead: {
                 tr: {
@@ -151,6 +164,7 @@ export default class MarkdownDeploymentSummaryCreator {
         const emoji = allPassedCoverageRequirement ? SUCCESS_MARK : FAILURE_EMOJI;
         return `# ${emoji} Coverage report\n\n${tt}`;
     }
+
 }
 
 const SUCCESS_MARK = "✓";
