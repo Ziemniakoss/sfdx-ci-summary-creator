@@ -14,3 +14,4 @@ sfdx-project.json
 /.sfdx/
 /.forceignore
 oclif.manifest.json
+yarn.lock
