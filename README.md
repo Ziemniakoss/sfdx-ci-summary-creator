@@ -11,10 +11,9 @@ pipelines for summarizing deployment without need for token generation
 
 ![Image showing how bitbucket displays this kind of report](images/junitsummary.png)
 
-| Variable                                                  | Default value                    | description                                                                                                                                     |
-| --------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH                      | test-results/sfdx-deployment.xml | Where to output result                                                                                                                          |
-| CI_SUMMARY_JUNIT_SUMMARY_EXCLUDE_TEST_FAILURES_DEPENDENTS | false                            | Should test fauilures caused by dependent classes compilation be skipped in xml. Setting this to true can reduce report file size significantly |
+| Variable                             | Default value                    | description            |
+| ------------------------------------ | -------------------------------- | ---------------------- |
+| CI_SUMMARY_JUNIT_SUMMARY_OUTPUT_PATH | test-results/sfdx-deployment.xml | Where to output result |
 
 ### Markdown deployment report
 
@@ -38,17 +37,24 @@ as [now you can use markdown reports for step summaries](https://github.blog/202
 Coveralls report will also be generated.
 Its important to bear in mind, that it won't be exactly correct because deployment hook only provides us with information about:
 
-- lines that were not covered
-- total number of location covered.
+-   lines that were not covered
+-   total number of location covered.
 
 but it doesn't provide us information about covered lines.
 This combined with the fact that we don't know which lines are important for code coverage means we have to take a wild guess.
 
 What I can guarantee about code coverage is that:
 
-- it will have same code coverage level
-- same lines won't be covered
+-   it will have same code coverage level
+-   same lines won't be covered
 
 | Variable                      | Default value                     | Description                             |
 | ----------------------------- | --------------------------------- | --------------------------------------- |
 | CI_SUMMARY_COVERALLS_LOCATION | deployment_reports/coveralls.json | Place in which report should be created |
+
+## Aditional config
+
+### Filtering dependent errors
+
+By default, this plugin will try to filter every error (both deployment and test run) that was caused by dependent class.
+This behaviour can be disabled by setting `FILTER_TEST_FAILURES_DUE_TO_DEPENDENT_CLASSES` env variable to `true`

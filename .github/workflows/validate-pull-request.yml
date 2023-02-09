@@ -1,33 +1,33 @@
 name: "Static analysis and testing"
 on:
-  pull_request:
-  push:
-    branches:
-      - master
+    pull_request:
+    push:
+        branches:
+            - master
 jobs:
-  prettier-validation:
-    runs-on: ubuntu-latest
-    name: Prettier validation
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: setup node
-        uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm ci
-      - name: Run prettier
-        run: npx prettier --list-different .
-  code-compilation:
-    runs-on: ubuntu-latest
-    name: Try to compile ts
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: setup node
-        uses: actions/setup-node@v2
-      - name: instal dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Check if prepack will work
-        run: npm run prepack
+    prettier-validation:
+        runs-on: ubuntu-latest
+        name: Prettier validation
+        steps:
+            - name: checkout
+              uses: actions/checkout@v2
+            - name: setup node
+              uses: actions/setup-node@v2
+            - name: install dependencies
+              run: npm ci
+            - name: Run prettier
+              run: npx prettier --list-different .
+    code-compilation:
+        runs-on: ubuntu-latest
+        name: Try to compile ts
+        steps:
+            - name: checkout
+              uses: actions/checkout@v2
+            - name: setup node
+              uses: actions/setup-node@v2
+            - name: instal dependencies
+              run: npm ci
+            - name: Build
+              run: npm run build
+            - name: Check if prepack will work
+              run: npm run prepack

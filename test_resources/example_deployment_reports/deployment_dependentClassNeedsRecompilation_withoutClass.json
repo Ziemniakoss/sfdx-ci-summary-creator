@@ -1,0 +1,54 @@
+{
+    "checkOnly": false,
+    "details": {
+        "componentFailures": [
+            {
+                "changed": false,
+                "columnNumber": 29,
+                "componentType": "ApexClass",
+                "created": false,
+                "deleted": false,
+                "fileName": "classes/Class1.cls",
+                "fullName": "Class1",
+                "lineNumber": 3,
+                "problem": "Dependent class is invalid and needs recompilation:\n Class Class2 : Variable does not exist: AAA",
+                "problemType": "Error",
+                "success": false
+            }
+        ],
+        "componentSuccesses": [
+            {
+                "changed": true,
+                "componentType": "",
+                "created": false,
+                "deleted": false,
+                "fileName": "package.xml",
+                "fullName": "package.xml",
+                "success": true
+            }
+        ],
+        "runTestResult": {
+            "numFailures": 0,
+            "numTestsRun": 0,
+            "totalTime": 0,
+            "codeCoverage": [],
+            "codeCoverageWarnings": [],
+            "failures": [],
+            "flowCoverage": [],
+            "flowCoverageWarnings": [],
+            "successes": []
+        }
+    },
+    "done": true,
+    "ignoreWarnings": false,
+    "numberComponentErrors": 2,
+    "numberComponentsDeployed": 0,
+    "numberComponentsTotal": 2,
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": false,
+    "status": "Failed",
+    "success": false
+}
