@@ -74,7 +74,8 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
 
     private createDeploymentTestSuite(deploymentResult: DeploymentResult): TestSuite {
         const failures = wrapInArray(deploymentResult.details.componentFailures);
-        const failuresCount = failures.length;
+        const failuresCount =
+            deploymentResult.numberComponentsDeployed + deploymentResult.numberComponentErrors;
         const successesCount = deploymentResult.details.componentSuccesses?.length ?? 0;
         const testSuite: TestSuite = {
             $: {
@@ -115,17 +116,6 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
             testcase: [],
         };
         let failures = wrapInArray(testCases.failures);
-        if (
-            this.env.getVar(
-                ENV_VARS_NAMES.JUNIT_REPORT.FILTER_TEST_FAILURES_DUE_TO_DEPENDENT_CLASSES
-            ) == "true"
-        ) {
-            failures = failures.filter(
-                (failure) =>
-                    !isTestDependentClassNeedsRecompilationError(failure.message) &&
-                    !isDeploymentDependentClassNeedsRecompilationError(failure.message)
-            );
-        }
         for (const failure of failures) {
             const caseForFailure: TestCase = {
                 $: {

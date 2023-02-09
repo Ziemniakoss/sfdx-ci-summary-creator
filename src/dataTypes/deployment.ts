@@ -4,6 +4,12 @@ export interface DeploymentResult {
     createdDate: string;
     completedDate: string;
     details: DeploymentDetails;
+    numberComponentErrors;
+    numberComponentsDeployed;
+    numberComponentsTotal;
+    numberTestErrors;
+    numberTestsCompleted;
+    numberTestsTotal;
 }
 
 interface DeploymentDetails {
@@ -37,7 +43,7 @@ interface CodeCoverageWarning {
     namespace: string;
 }
 
-interface RunTestFailure {
+export interface RunTestFailure {
     message: string;
     methodName: string;
     name: string;
@@ -84,7 +90,7 @@ interface RunTestsResult {
 }
 
 type DeployProblemType = "Error" | "Warning";
-interface DeployMessage {
+export interface DeployMessage {
     changed: string;
     columnNumber: number;
     componentType: ComponentType;
