@@ -22,6 +22,7 @@ export function preprocess(
     copy.details.componentFailures = wrapInArray(copy.details.componentFailures);
     copy.details.componentSuccesses = wrapInArray(copy.details.componentSuccesses);
     copy.details.runTestResult.failures = wrapInArray(copy.details.runTestResult.failures);
+    copy.details.runTestResult.codeCoverage = wrapInArray(copy.details.runTestResult.codeCoverage)
     if (deleteDependentClassNeedsRecompilationErrors) {
         deleteDeploymentFailuresDueToDependentClasses(copy);
         deleteTestFailuresDueToDependentClasses(copy);
@@ -32,7 +33,6 @@ export function preprocess(
 const MESSAGE_PREFIXES = {
     TEST_DEPENDENT_CLASS_NEEDS_RECOMPILATION:
         "line -1, column -1: Dependent class is invalid and needs recompilation",
-
     DEPLOYMENT_DEPENDENT_CLASS_NEEDS_RECOMPILATION:
         "Dependent class is invalid and needs recompilation:\n Class ",
 } as const;

@@ -1,9 +1,9 @@
 import { DeploymentResult } from "../../dataTypes/deployment";
 import MarkdownDeploymentSummaryCreator from "../../MarkdownDeploymentSummaryCreator";
-import CoverallsCoverageReportCreator from "../../CoverallsCoverageReportCreator";
 import JUnitDeploymentSummaryCreator from "../../reportGenerators/JUnitDeploymentSummaryCreator";
 import Environment from "../../utils/Environment";
 import { preprocess } from "../../utils/preprocessing";
+import CoverallsCoverageReportCreator from "../../reportGenerators/CoverallsCoverageReportCreator";
 
 interface PostDeploymentEvent {
     result: {
@@ -20,7 +20,7 @@ const hook = async function (event: PostDeploymentEvent) {
     const promises: Promise<any>[] = [
         new MarkdownDeploymentSummaryCreator().createSummary(deploymentResult).catch(printError),
         new JUnitDeploymentSummaryCreator(env).createReport(deploymentResult).catch(printError),
-        new CoverallsCoverageReportCreator().createSummary(deploymentResult).catch(printError),
+        new CoverallsCoverageReportCreator().createReport(deploymentResult).catch(printError),
     ];
     return (
         Promise.all(promises)

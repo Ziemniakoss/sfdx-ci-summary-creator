@@ -1,7 +1,8 @@
-import { CodeCoverageResult, DeploymentResult } from "./dataTypes/deployment";
-import { findFile, getProjectRoot, mkdirs, wrapInArray } from "./utils/utils";
-import { promises } from "fs";
-import { join, dirname } from "path";
+import {promises} from "fs";
+import {join, dirname} from "path";
+import {ReportGenerator} from "./ReportGenerator";
+import {CodeCoverageResult, DeploymentResult} from "../dataTypes/deployment";
+import {findFile, getProjectRoot, mkdirs, wrapInArray} from "../utils/utils";
 
 interface SourceFile {
     name: string;
@@ -13,26 +14,28 @@ interface CoverallsReport {
     service_name: string;
     repo_token?: string;
 }
+
 const ENV_REPORT_DIR = "CI_SUMMARY_COVERALLS_LOCATION";
 
-export default class CoverallsCoverageReportCreator {
-    async createSummary(deploymentResult: DeploymentResult) {
-        const coverage: CodeCoverageResult[] = wrapInArray(
-            deploymentResult?.details?.runTestResult?.codeCoverage
-        );
-
+export default class CoverallsCoverageReportCreator implements ReportGenerator {
+    async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
         const sourceFiles = await Promise.all(
-            coverage.map((fileCoverage) => this.createSourceFileSummary(fileCoverage))
+            deployment.details.runTestResult.codeCoverage.map((fileCoverage) => this.createSourceFileSummary(fileCoverage))
         );
         const report: CoverallsReport = {
             service_name: "sfdx-ci-summary-creator",
             source_files: sourceFiles,
         };
-        const outputPath =
-            process.env[ENV_REPORT_DIR] ??
-            join(await getProjectRoot(process.cwd()), "deployment_reports", "coveralls.json");
-        await mkdirs(dirname(outputPath));
-        return promises.writeFile(outputPath, JSON.stringify(report, null, 4));
+        const reportAsString = JSON.stringify(report)
+        if (writeToDisc) {
+            const outputPath =
+                process.env[ENV_REPORT_DIR] ??
+                join(await getProjectRoot(process.cwd()), "deployment_reports", "coveralls.json");
+            await mkdirs(dirname(outputPath));
+            await promises.writeFile(outputPath, JSON.stringify(report));
+
+        }
+        return reportAsString
     }
 
     private async createSourceFileSummary(
@@ -78,4 +81,5 @@ export default class CoverallsCoverageReportCreator {
             coverage,
         };
     }
+
 }
