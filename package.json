@@ -1,59 +1,59 @@
 {
-  "name": "sfdx-ci-summary-creator",
-  "description": "Creates deployments summary using sfdx hooks",
-  "version": "1.5.0",
-  "author": "Ziemniakoss",
-  "dependencies": {
-    "tslib": "^2.5.0",
-    "xml2js": "^0.4.23"
-  },
-  "devDependencies": {
-    "@oclif/dev-cli": "^1.26.10",
-    "@salesforce/dev-config": "^3.1.0",
-    "@types/mocha": "^10.0.1",
-    "esm": "^3.2.25",
-    "mocha": "^10.2.0",
-    "nyc": "^15.1.0",
-    "prettier": "^2.8.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "files": [
-    "/lib",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
-  ],
-  "keywords": [
-    "sfdx-plugin",
-    "hooks",
-    "cicd",
-    "automations",
-    "summaries",
-    "bitbucket",
-    "github"
-  ],
-  "license": "MIT",
-  "oclif": {
-    "hooks": {
-      "postdeploy": [
-        "./lib/hooks/postdeploy/createDeploymentSummary.js"
-      ]
+    "name": "sfdx-ci-summary-creator",
+    "description": "Creates deployments summary using sfdx hooks",
+    "version": "1.5.0",
+    "author": "Ziemniakoss",
+    "dependencies": {
+        "tslib": "^2.5.0",
+        "xml2js": "^0.4.23"
     },
-    "bin": "sfdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ]
-  },
-  "repository": "ziemniakoss/sfdx-ci-summary-creator",
-  "scripts": {
-    "build": "tsc -p .",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "version": "oclif-dev readme && git add README.md",
-    "pretest": "npm run build",
-    "test": "nyc --extension .ts --require ts-node/register mocha --forbid-only \"test/**/*.test.ts\" --timeout 10000"
-  }
+    "devDependencies": {
+        "@oclif/dev-cli": "^1.26.10",
+        "@salesforce/dev-config": "^3.1.0",
+        "@types/mocha": "^10.0.1",
+        "esm": "^3.2.25",
+        "mocha": "^10.2.0",
+        "nyc": "^15.1.0",
+        "prettier": "^2.8.4",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.5"
+    },
+    "engines": {
+        "node": ">=12.0.0"
+    },
+    "files": [
+        "/lib",
+        "/npm-shrinkwrap.json",
+        "/oclif.manifest.json"
+    ],
+    "keywords": [
+        "sfdx-plugin",
+        "hooks",
+        "cicd",
+        "automations",
+        "summaries",
+        "bitbucket",
+        "github"
+    ],
+    "license": "MIT",
+    "oclif": {
+        "hooks": {
+            "postdeploy": [
+                "./lib/hooks/postdeploy/createDeploymentSummary.js"
+            ]
+        },
+        "bin": "sfdx",
+        "devPlugins": [
+            "@oclif/plugin-help"
+        ]
+    },
+    "repository": "ziemniakoss/sfdx-ci-summary-creator",
+    "scripts": {
+        "build": "tsc -p .",
+        "postpack": "rm -f oclif.manifest.json",
+        "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+        "version": "oclif-dev readme && git add README.md",
+        "pretest": "npm run build",
+        "test": "nyc --extension .ts --require ts-node/register mocha --forbid-only \"test/**/*.test.ts\" --timeout 10000"
+    }
 }

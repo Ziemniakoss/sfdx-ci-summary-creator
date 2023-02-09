@@ -1,0 +1,93 @@
+{
+    "checkOnly": false,
+    "completedDate": "2022-10-19T20:56:16.000Z",
+    "createdBy": "someId",
+    "createdByName": "Test User",
+    "createdDate": "2022-10-19T20:56:15.000Z",
+    "details": {
+        "componentSuccesses": [
+            {
+                "changed": true,
+                "componentType": "",
+                "created": false,
+                "createdDate": "2022-10-19T20:56:15.000Z",
+                "deleted": false,
+                "fileName": "package.xml",
+                "fullName": "package.xml",
+                "success": true
+            }
+        ],
+        "runTestResult": {
+            "failures": [
+                {
+                    "id": "RRRId",
+                    "message": "line 4, column 36: Variable does not exist: K",
+                    "methodName": "",
+                    "name": "RRR",
+                    "namespace": null,
+                    "packageName": "RRR",
+                    "stackTrace": null,
+                    "time": -1,
+                    "type": "Class"
+                },
+                {
+                    "id": "TesCLId",
+                    "message": "line -1, column -1: Dependent class is invalid and needs recompilation:\n Class TestCL : Variable does not exist: K",
+                    "methodName": "",
+                    "name": "TestCL",
+                    "namespace": null,
+                    "packageName": "TestCL",
+                    "stackTrace": null,
+                    "time": -1,
+                    "type": "Class"
+                },
+                {
+                    "id": "TestClassAuraId",
+                    "message": "line -1, column -1: Dependent class is invalid and needs recompilation:\n Class TestClassAura : Variable does not exist: K",
+                    "methodName": "",
+                    "name": "TestClassAura",
+                    "namespace": null,
+                    "packageName": "TestClassAura",
+                    "stackTrace": null,
+                    "time": -1,
+                    "type": "Class"
+                },
+                {
+                    "id": "testClassId",
+                    "message": "line -1, column -1: Dependent class is invalid and needs recompilation:\n Class TestClass : Variable does not exist: K",
+                    "methodName": "",
+                    "name": "TestClass",
+                    "namespace": null,
+                    "packageName": "TestClass",
+                    "stackTrace": null,
+                    "time": -1,
+                    "type": "Class"
+                }
+            ],
+            "numFailures": 7,
+            "numTestsRun": 7,
+            "totalTime": 0,
+            "codeCoverage": [],
+            "codeCoverageWarnings": [],
+            "flowCoverage": [],
+            "flowCoverageWarnings": [],
+            "successes": []
+        },
+        "componentFailures": []
+    },
+    "done": true,
+    "id": "deploymentId",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2022-10-19T20:56:16.000Z",
+    "numberComponentErrors": 0,
+    "numberComponentsDeployed": 1,
+    "numberComponentsTotal": 1,
+    "numberTestErrors": 7,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 7,
+    "rollbackOnError": true,
+    "runTestsEnabled": true,
+    "startDate": "2022-10-19T20:56:15.000Z",
+    "status": "Failed",
+    "success": false
+}
