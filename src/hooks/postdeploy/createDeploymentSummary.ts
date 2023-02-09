@@ -4,6 +4,7 @@ import Environment from "../../utils/Environment";
 import { preprocess } from "../../utils/preprocessing";
 import CoverallsCoverageReportCreator from "../../reportGenerators/CoverallsCoverageReportCreator";
 import MarkdownDeploymentSummaryCreator from "../../reportGenerators/MarkdownDeploymentSummaryCreator";
+import { ENV_VARS_NAMES } from "../../utils/constants";
 
 interface PostDeploymentEvent {
     result: {
@@ -12,8 +13,11 @@ interface PostDeploymentEvent {
 }
 
 const hook = async function (event: PostDeploymentEvent) {
-    const deploymentResult = preprocess(event?.result?.response, true);
     const env = new Environment();
+    const showDependentErrors = Boolean(
+        env.getVar(ENV_VARS_NAMES.COMMON.SHOW_FAILED_DUE_TO_DEPENDENT)
+    );
+    const deploymentResult = preprocess(event?.result?.response, !showDependentErrors);
     if (deploymentResult == null) {
         return;
     }
