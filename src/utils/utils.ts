@@ -28,9 +28,9 @@ export async function getProjectRoot(searchStartPath: string): Promise<string> {
     return getProjectRoot(dirname(searchStartPath));
 }
 
-async function getProjectDirectories():Promise<string[]> {
+async function getProjectDirectories(): Promise<string[]> {
     const rootProjectDirectory = await getProjectRoot(process.cwd());
-    return  promises
+    return promises
         .readFile(join(rootProjectDirectory, "sfdx-project.json"), "utf-8")
         .then(JSON.parse)
         .then((projectDefinition) => {
@@ -38,7 +38,6 @@ async function getProjectDirectories():Promise<string[]> {
                 join(rootProjectDirectory, projectDir.path)
             );
         });
-
 }
 
 /**
@@ -47,12 +46,12 @@ async function getProjectDirectories():Promise<string[]> {
  * we need to cache this promise to speed up process (basically we are looking
  * for project directories only once)
  */
-let sharedProjectDirectoriesDiscoveryPromise:Promise<string[]>
+let sharedProjectDirectoriesDiscoveryPromise: Promise<string[]>;
 export async function findFile(fileName: string): Promise<string | null> {
-    if(sharedProjectDirectoriesDiscoveryPromise == null) {
-        sharedProjectDirectoriesDiscoveryPromise = getProjectDirectories()
+    if (sharedProjectDirectoriesDiscoveryPromise == null) {
+        sharedProjectDirectoriesDiscoveryPromise = getProjectDirectories();
     }
-    const projectDirectories = await sharedProjectDirectoriesDiscoveryPromise
+    const projectDirectories = await sharedProjectDirectoriesDiscoveryPromise;
     for (const projectDir of projectDirectories) {
         const foundFileInDir = await findFileInDirectory(fileName, projectDir);
         if (foundFileInDir != null) {
