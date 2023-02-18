@@ -26,8 +26,8 @@ interface CodeLocation {
 }
 
 export interface CodeCoverageResult {
-    numLocationsNotCovered: string;
-    numLocations: string;
+    numLocationsNotCovered: number;
+    numLocations: number;
     dmlInfo?: CodeLocation[];
     id: string;
     locationsNotCovered: CodeLocation[];
@@ -70,14 +70,14 @@ interface FlowCoverageWarning {
     message: string;
 }
 
-interface RunTestSuccess {
+export interface RunTestSuccess {
     methodName: string;
     name: string;
     namespace: string;
     time: number | string;
 }
 
-interface RunTestsResult {
+export interface RunTestsResult {
     apexLogId: string;
     codeCoverage: CodeCoverageResult[];
     codeCoverageWarnings: CodeCoverageWarning[];

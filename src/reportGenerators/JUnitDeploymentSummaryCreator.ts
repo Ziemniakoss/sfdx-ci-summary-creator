@@ -69,8 +69,7 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
 
     private createDeploymentTestSuite(deploymentResult: DeploymentResult): TestSuite {
         const failures = wrapInArray(deploymentResult.details.componentFailures);
-        const failuresCount =
-            deploymentResult.numberComponentsDeployed + deploymentResult.numberComponentErrors;
+        const failuresCount = deploymentResult.numberComponentsDeployed + deploymentResult.numberComponentErrors;
         const successesCount = deploymentResult.details.componentSuccesses?.length ?? 0;
         const testSuite: TestSuite = {
             $: {

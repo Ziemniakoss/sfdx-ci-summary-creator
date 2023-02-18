@@ -62,12 +62,8 @@ export async function findFile(fileName: string): Promise<string | null> {
 }
 
 async function findFileInDirectory(fileName: string, directory: string): Promise<string | null> {
-    const dirContent = await promises
-        .readdir(directory)
-        .then((files) => files.map((file) => join(directory, file)));
-    const contentsWithProps = await Promise.all(
-        dirContent.map((file) => ({ file, properties: promises.lstat(file) }))
-    );
+    const dirContent = await promises.readdir(directory).then((files) => files.map((file) => join(directory, file)));
+    const contentsWithProps = await Promise.all(dirContent.map((file) => ({ file, properties: promises.lstat(file) })));
     const dirs = [];
     for (const p of contentsWithProps) {
         const properties = await p.properties;
@@ -78,8 +74,6 @@ async function findFileInDirectory(fileName: string, directory: string): Promise
         }
     }
 
-    const foundFilesInSubdirs = await Promise.all(
-        dirs.map((dirName) => findFileInDirectory(fileName, dirName))
-    );
+    const foundFilesInSubdirs = await Promise.all(dirs.map((dirName) => findFileInDirectory(fileName, dirName)));
     return foundFilesInSubdirs.find((file) => file != null);
 }

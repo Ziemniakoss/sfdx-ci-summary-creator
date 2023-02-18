@@ -39,9 +39,7 @@ export default class CoverallsCoverageReportCreator implements ReportGenerator {
         return reportAsString;
     }
 
-    private async createSourceFileSummary(
-        fileCodeCoverage: CodeCoverageResult
-    ): Promise<SourceFile> {
+    private async createSourceFileSummary(fileCodeCoverage: CodeCoverageResult): Promise<SourceFile> {
         const notCoveredLines = new Set<number>();
         //@ts-ignore
         let greatestLineNumber = parseInt(fileCodeCoverage.numLocations ?? 6);
@@ -52,9 +50,7 @@ export default class CoverallsCoverageReportCreator implements ReportGenerator {
             greatestLineNumber = Math.max(greatestLineNumber, lineNumber);
         }
 
-        let linesToMarkAsCovered =
-            parseInt(fileCodeCoverage.numLocations) -
-            parseInt(fileCodeCoverage.numLocationsNotCovered);
+        let linesToMarkAsCovered = fileCodeCoverage.numLocations - fileCodeCoverage.numLocationsNotCovered;
         const coverage = [];
         for (let i = 1; i <= greatestLineNumber; i++) {
             if (notCoveredLines.has(i)) {

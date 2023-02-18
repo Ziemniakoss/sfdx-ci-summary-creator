@@ -2,7 +2,9 @@
     "compilerOptions": {
         "outDir": "lib",
         "rootDir": "src",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "downlevelIteration": true
     },
     "include": ["./src/**/*.ts"]
 }

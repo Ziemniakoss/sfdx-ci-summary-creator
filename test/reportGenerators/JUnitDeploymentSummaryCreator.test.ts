@@ -25,10 +25,7 @@ function createReport_dependentClassNeedRecompilation() {
             )
             .then(JSON.parse)
             .then((deploymentReport) =>
-                new JUnitDeploymentSummaryCreator(new Environment()).createReport(
-                    deploymentReport,
-                    false
-                )
+                new JUnitDeploymentSummaryCreator(new Environment()).createReport(deploymentReport, false)
             );
         it("should not fail", async () => {
             await reportGenerationPromise;
