@@ -1,6 +1,5 @@
 import { ReportGenerator } from "./ReportGenerator";
 import { DeploymentResult, RunTestFailure, RunTestSuccess } from "../dataTypes/deployment";
-import * as constants from "constants";
 
 const chalk = require("chalk");
 
@@ -53,8 +52,6 @@ export default class ReadableConsoleReport implements ReportGenerator {
             return `${formattedComponentName}: ${failure.problem}`;
         });
         return header + formattedErrorMessages.join("\n");
-
-        return header;
     }
 
     private async createTestExecutionSection(deployment: DeploymentResult): Promise<string> {
@@ -173,12 +170,14 @@ export default class ReadableConsoleReport implements ReportGenerator {
         const header = chalk.bold("Code Coverage Warnings\n");
         return (
             header +
-            codeCoverageWarnings.map((warning) => {
-                if (warning.name != null) {
-                    return `  - ${warning.name}: ${warning.message}`;
-                }
-                return `  - ${warning.message}`;
-            })
+            codeCoverageWarnings
+                .map((warning) => {
+                    if (warning.name != null) {
+                        return `  - ${warning.name}: ${warning.message}`;
+                    }
+                    return `  - ${warning.message}`;
+                })
+                .join("\n")
         );
     }
 }

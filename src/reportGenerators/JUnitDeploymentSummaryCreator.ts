@@ -55,6 +55,7 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
                 testsuite: await Promise.all([
                     this.createTestRunTestSuite(deploymentResult),
                     this.createDeploymentTestSuite(deploymentResult),
+                    this.createCodeCoverageWarningsTestSuite(deploymentResult),
                 ]),
             },
         };
@@ -69,13 +70,11 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
 
     private createDeploymentTestSuite(deploymentResult: DeploymentResult): TestSuite {
         const failures = wrapInArray(deploymentResult.details.componentFailures);
-        const failuresCount = deploymentResult.numberComponentsDeployed + deploymentResult.numberComponentErrors;
-        const successesCount = deploymentResult.details.componentSuccesses?.length ?? 0;
         const testSuite: TestSuite = {
             $: {
                 name: "Deployment",
-                tests: failuresCount + successesCount,
-                failures: failuresCount,
+                tests: deploymentResult.numberComponentsTotal,
+                failures: deploymentResult.numberComponentErrors,
             },
             testcase: [],
         };
@@ -133,5 +132,45 @@ export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
             testSuite.testcase.push(caseForFailure);
         }
         return testSuite;
+    }
+
+    private async createCodeCoverageWarningsTestSuite(deployment: DeploymentResult): Promise<TestSuite> {
+        const coverageWarnings = deployment.details.runTestResult.codeCoverageWarnings ?? [];
+        const coverageTestSuite: TestSuite = {
+            $: {
+                name: "Coverage",
+                tests: coverageWarnings.length,
+                failures: coverageWarnings.length,
+            },
+            testcase: [],
+        };
+        coverageWarnings.forEach((warning) => {
+            if (warning.name == null) {
+                coverageTestSuite.testcase.push({
+                    $: {
+                        name: "General",
+                        classname: "Other",
+                    },
+                    failure: [
+                        {
+                            $: { message: warning.message },
+                        },
+                    ],
+                });
+            } else {
+                coverageTestSuite.testcase.push({
+                    $: {
+                        classname: "ApexCode",
+                        name: warning.name,
+                    },
+                    failure: [
+                        {
+                            $: { message: warning.message },
+                        },
+                    ],
+                });
+            }
+        });
+        return coverageTestSuite;
     }
 }

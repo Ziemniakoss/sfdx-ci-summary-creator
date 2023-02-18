@@ -14,7 +14,7 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         if (deployment.details.runTestResult.codeCoverage.length > 0) {
             reportGenerationPromises.push(this.createCoverageReport(deployment));
         }
-        reportGenerationPromises.push(this.createCoverageWarningsSection(deployment))
+        reportGenerationPromises.push(this.createCoverageWarningsSection(deployment));
         const report = await Promise.all(reportGenerationPromises).then((reportParts) => reportParts.join("\n\n"));
 
         if (writeToDisc) {
@@ -157,18 +157,18 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         return `# ${emoji} Coverage report\n\n${tt}`;
     }
 
-    private async  createCoverageWarningsSection(deployment:DeploymentResult) :Promise<string>{
-        if(deployment.details.runTestResult.codeCoverageWarnings.length == 0)         {
-            return ""
+    private async createCoverageWarningsSection(deployment: DeploymentResult): Promise<string> {
+        if (deployment.details.runTestResult.codeCoverageWarnings.length == 0) {
+            return "";
         }
-        const header = "# Coverage Warnings\n\n"
-        const warnings = deployment.details.runTestResult.codeCoverageWarnings.map(warning => {
-            if(warning.name ==null) {
-                return `- ${warning.message}`
+        const header = "# Coverage Warnings\n\n";
+        const warnings = deployment.details.runTestResult.codeCoverageWarnings.map((warning) => {
+            if (warning.name == null) {
+                return `- ${warning.message}`;
             }
-            return  `- ${warning.name}: ${warning.message}`
-        })
-        return header + warnings.join("\n")
+            return `- ${warning.name}: ${warning.message}`;
+        });
+        return header + warnings.join("\n");
     }
 }
 
