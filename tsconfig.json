@@ -3,7 +3,8 @@
         "outDir": "lib",
         "rootDir": "src",
         "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "downlevelIteration": true
     },
     "include": ["./src/**/*.ts"]
 }

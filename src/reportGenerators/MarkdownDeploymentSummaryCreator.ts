@@ -7,18 +7,14 @@ import { mkdirs, wrapInArray } from "../utils/utils";
 
 export default class MarkdownDeploymentSummaryCreator implements ReportGenerator {
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
-        const reportGenerationPromises: Promise<string>[] = [
-            this.createDeploymentSummary(deployment),
-        ];
+        const reportGenerationPromises: Promise<string>[] = [this.createDeploymentSummary(deployment)];
         if (deployment.details.componentFailures.length == 0) {
             reportGenerationPromises.push(this.createTestRunReport(deployment));
         }
         if (deployment.details.runTestResult.codeCoverage.length > 0) {
             reportGenerationPromises.push(this.createCoverageReport(deployment));
         }
-        const report = await Promise.all(reportGenerationPromises).then((reportParts) =>
-            reportParts.join("\n\n")
-        );
+        const report = await Promise.all(reportGenerationPromises).then((reportParts) => reportParts.join("\n\n"));
 
         if (writeToDisc) {
             const outputPath = this.getOutputFile();
@@ -30,10 +26,7 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
 
     private getOutputFile() {
         let outputFile = "deployment_report.md";
-        if (
-            process.env["GITHUB_STEP_SUMMARY"] != null &&
-            process.env["GITHUB_STEP_SUMMARY"] != ""
-        ) {
+        if (process.env["GITHUB_STEP_SUMMARY"] != null && process.env["GITHUB_STEP_SUMMARY"] != "") {
             outputFile = process.env["GITHUB_STEP_SUMMARY"];
         } else if (
             process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] != null &&
@@ -119,14 +112,12 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         };
         const rows = table.tbody.tr;
         let allPassedCoverageRequirement = true;
-        let minimumCodeCoverage = parseInt(
-            process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_MIN_COVERAGE"]
-        );
+        let minimumCodeCoverage = parseInt(process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_MIN_COVERAGE"]);
         if (isNaN(minimumCodeCoverage)) {
             minimumCodeCoverage = 75;
         }
-        const coverages = wrapInArray(deploymentResult.details.runTestResult.codeCoverage).sort(
-            (first, second) => first.name.localeCompare(second.name)
+        const coverages = wrapInArray(deploymentResult.details.runTestResult.codeCoverage).sort((first, second) =>
+            first.name.localeCompare(second.name)
         );
         for (const coverage of coverages) {
             const className = coverage.name;
@@ -136,9 +127,7 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
             const locationsNotCoveredCount = parseInt(coverage.numLocationsNotCovered);
             let coveragePercent = 100;
             if (locationsCount != 0) {
-                coveragePercent = Math.ceil(
-                    (100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount
-                );
+                coveragePercent = Math.ceil((100.0 * (locationsCount - locationsNotCoveredCount)) / locationsCount);
             }
             let coverageTestColor = "green";
             if (coveragePercent < minimumCodeCoverage) {

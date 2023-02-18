@@ -5,6 +5,7 @@ import { preprocess } from "../../utils/preprocessing";
 import CoverallsCoverageReportCreator from "../../reportGenerators/CoverallsCoverageReportCreator";
 import MarkdownDeploymentSummaryCreator from "../../reportGenerators/MarkdownDeploymentSummaryCreator";
 import { ENV_VARS_NAMES } from "../../utils/constants";
+import ReadableConsoleReport from "../../reportGenerators/ReadableConsoleReport";
 
 interface PostDeploymentEvent {
     result: {
@@ -14,9 +15,7 @@ interface PostDeploymentEvent {
 
 const hook = async function (event: PostDeploymentEvent) {
     const env = new Environment();
-    const showDependentErrors = Boolean(
-        env.getVar(ENV_VARS_NAMES.COMMON.SHOW_FAILED_DUE_TO_DEPENDENT)
-    );
+    const showDependentErrors = Boolean(env.getVar(ENV_VARS_NAMES.COMMON.SHOW_FAILED_DUE_TO_DEPENDENT));
     const deploymentResult = preprocess(event?.result?.response, !showDependentErrors);
     if (deploymentResult == null) {
         return;
@@ -25,6 +24,7 @@ const hook = async function (event: PostDeploymentEvent) {
         new MarkdownDeploymentSummaryCreator().createReport(deploymentResult).catch(printError),
         new JUnitDeploymentSummaryCreator(env).createReport(deploymentResult).catch(printError),
         new CoverallsCoverageReportCreator().createReport(deploymentResult).catch(printError),
+        new ReadableConsoleReport().createReport(deploymentResult).catch(printError),
     ];
     return (
         Promise.all(promises)
@@ -35,12 +35,8 @@ const hook = async function (event: PostDeploymentEvent) {
 };
 
 function printError(error) {
-    console.error(
-        "============================Error in hook======================================="
-    );
+    console.error("============================Error in hook=======================================");
     console.error(error);
-    console.error(
-        "====================================For========================================="
-    );
+    console.error("====================================For=========================================");
 }
 export default hook;

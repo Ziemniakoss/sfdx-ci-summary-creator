@@ -14,10 +14,7 @@ import { wrapInArray } from "./utils";
  * classes be deleted. Setting this to true significantly increases readability of deployment
  * error
  */
-export function preprocess(
-    deploymentResult: DeploymentResult,
-    deleteDependentClassNeedsRecompilationErrors: boolean
-) {
+export function preprocess(deploymentResult: DeploymentResult, deleteDependentClassNeedsRecompilationErrors: boolean) {
     const copy: DeploymentResult = JSON.parse(JSON.stringify(deploymentResult));
     copy.details.componentFailures = wrapInArray(copy.details.componentFailures);
     copy.details.componentSuccesses = wrapInArray(copy.details.componentSuccesses);
@@ -31,20 +28,19 @@ export function preprocess(
 }
 
 const MESSAGE_PREFIXES = {
-    TEST_DEPENDENT_CLASS_NEEDS_RECOMPILATION:
-        "line -1, column -1: Dependent class is invalid and needs recompilation",
-    DEPLOYMENT_DEPENDENT_CLASS_NEEDS_RECOMPILATION:
-        "Dependent class is invalid and needs recompilation:\n Class ",
+    TEST_DEPENDENT_CLASS_NEEDS_RECOMPILATION: "line -1, column -1: Dependent class is invalid and needs recompilation",
+    DEPLOYMENT_DEPENDENT_CLASS_NEEDS_RECOMPILATION: "Dependent class is invalid and needs recompilation:\n Class ",
 } as const;
 
 function deleteTestFailuresDueToDependentClasses(deploymentResult: DeploymentResult) {
-    deploymentResult.details.runTestResult.failures =
-        deploymentResult.details.runTestResult.failures.filter((failure) => {
+    deploymentResult.details.runTestResult.failures = deploymentResult.details.runTestResult.failures.filter(
+        (failure) => {
             const isDueToDependentClass = failure.message.startsWith(
                 MESSAGE_PREFIXES.TEST_DEPENDENT_CLASS_NEEDS_RECOMPILATION
             );
             return !isDueToDependentClass;
-        });
+        }
+    );
 }
 
 function deleteDeploymentFailuresDueToDependentClasses(deploymentResult: DeploymentResult) {
