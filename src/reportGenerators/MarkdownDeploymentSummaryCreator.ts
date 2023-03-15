@@ -4,8 +4,21 @@ import { dirname } from "path";
 import { DeploymentResult } from "../dataTypes/deployment";
 import { ReportGenerator } from "./ReportGenerator";
 import { mkdirs, wrapInArray } from "../utils/utils";
+import Environment from "../utils/Environment";
+import { ENV_VARS_NAMES } from "../utils/constants";
 
-export default class MarkdownDeploymentSummaryCreator implements ReportGenerator {
+const SUCCESS_MARK = "✓";
+const FAILURE_EMOJI = "✖";
+
+export default class MarkdownDeploymentSummaryCreator extends ReportGenerator {
+    constructor(private env: Environment) {
+        super();
+    }
+
+    shouldBeDisabled(): boolean {
+        return this.env.getBooleanVar(ENV_VARS_NAMES.MARKDOWN.DISABLED);
+    }
+
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
         const reportGenerationPromises: Promise<string>[] = [this.createDeploymentSummary(deployment)];
         if (deployment.details.componentFailures.length == 0) {
@@ -26,16 +39,11 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
     }
 
     private getOutputFile() {
-        let outputFile = "deployment_report.md";
-        if (process.env["GITHUB_STEP_SUMMARY"] != null && process.env["GITHUB_STEP_SUMMARY"] != "") {
-            outputFile = process.env["GITHUB_STEP_SUMMARY"];
-        } else if (
-            process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] != null &&
-            process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"] != ""
-        ) {
-            outputFile = process.env["CI_SUMMARY_MD_DEPLOYMENT_REPORT_OUTPUT"];
-        }
-        return outputFile;
+        return (
+            this.env.getVar(ENV_VARS_NAMES.MARKDOWN.LOCATION) ||
+            this.env.getVar(ENV_VARS_NAMES.COMMON.GITHUB_STEP_SUMMARY) ||
+            "deployment_report.md"
+        );
     }
 
     private async createDeploymentSummary(deploymentResult: DeploymentResult): Promise<string> {
@@ -171,6 +179,3 @@ export default class MarkdownDeploymentSummaryCreator implements ReportGenerator
         return header + warnings.join("\n");
     }
 }
-
-const SUCCESS_MARK = "✓";
-const FAILURE_EMOJI = "✖";

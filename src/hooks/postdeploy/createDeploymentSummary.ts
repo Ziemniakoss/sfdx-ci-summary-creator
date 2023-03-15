@@ -21,11 +21,14 @@ const hook = async function (event: PostDeploymentEvent) {
         return;
     }
     const promises: Promise<any>[] = [
-        new MarkdownDeploymentSummaryCreator().createReport(deploymentResult).catch(printError),
-        new JUnitDeploymentSummaryCreator(env).createReport(deploymentResult).catch(printError),
-        new CoverallsCoverageReportCreator().createReport(deploymentResult).catch(printError),
-        new ReadableConsoleReport().createReport(deploymentResult).catch(printError),
-    ];
+        new MarkdownDeploymentSummaryCreator(env),
+        new JUnitDeploymentSummaryCreator(env),
+        new CoverallsCoverageReportCreator(env),
+        new ReadableConsoleReport(env),
+    ]
+        .filter((generator) => !generator.shouldBeDisabled())
+        .map((generator) => generator.createReport(deploymentResult).catch((error) => printError(error)));
+
     return (
         Promise.all(promises)
             .catch(printError)
@@ -39,4 +42,5 @@ function printError(error) {
     console.error(error);
     console.error("====================================For=========================================");
 }
+
 export default hook;

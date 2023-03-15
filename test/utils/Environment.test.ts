@@ -32,3 +32,29 @@ export function testEnvironment() {
         describe("# get", testGet);
     });
 }
+
+describe("Environment # getBooleanVar", () => {
+    context("variable is 'true'", () => {
+        const key = "SomeKey2";
+        process.env[key] = "true";
+        const result = new Environment().getBooleanVar(key);
+        it("should return true", () => {
+            assert.equal(result, true);
+        });
+    });
+    context("variable is 'false'", () => {
+        const key = "SomeKey1";
+        process.env[key] = "false";
+        const result = new Environment().getBooleanVar(key);
+        it("should return false", () => {
+            assert.equal(result, false);
+        });
+    });
+    context("variable has no value", () => {
+        const env = new Environment();
+        const result = env.getBooleanVar("AaAaBbBbCcCc");
+        it("should be false", () => {
+            assert.equal(result, false, "Non existing-variables should be false");
+        });
+    });
+});
