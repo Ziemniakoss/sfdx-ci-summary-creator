@@ -1,6 +1,6 @@
 import { DeploymentResult } from "../dataTypes/deployment";
 
-export interface ReportGenerator {
+export abstract class ReportGenerator {
     /**
      * Create report and write it to default location.
      * Location for report should be overridable by environmental variables
@@ -9,5 +9,14 @@ export interface ReportGenerator {
      * @param writeToDisc write report to file, specified by generator implementation
      * @return report content, mainly for testing purposes
      */
-    createReport(deployment: DeploymentResult, writeToDisc): Promise<string>;
+    abstract createReport(deployment: DeploymentResult, writeToDisc): Promise<string>;
+
+    abstract shouldBeDisabled(): boolean;
+
+    async createReportIfNotDisabled(deployment: DeploymentResult, writeToDisc) {
+        if (this.shouldBeDisabled()) {
+            return this.createReport(deployment, writeToDisc);
+        }
+        return null;
+    }
 }

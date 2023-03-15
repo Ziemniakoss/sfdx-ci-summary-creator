@@ -3,6 +3,8 @@ import { join, dirname } from "path";
 import { ReportGenerator } from "./ReportGenerator";
 import { CodeCoverageResult, DeploymentResult } from "../dataTypes/deployment";
 import { findFile, getProjectRoot, mkdirs, wrapInArray } from "../utils/utils";
+import Environment from "../utils/Environment";
+import { ENV_VARS_NAMES } from "../utils/constants";
 
 interface SourceFile {
     name: string;
@@ -15,9 +17,14 @@ interface CoverallsReport {
     repo_token?: string;
 }
 
-const ENV_REPORT_DIR = "CI_SUMMARY_COVERALLS_LOCATION";
+export default class CoverallsCoverageReportCreator extends ReportGenerator {
+    shouldBeDisabled(): boolean {
+        return this.env.getBooleanVar(ENV_VARS_NAMES.COVERALLS.DISABLED);
+    }
+    constructor(private env: Environment) {
+        super();
+    }
 
-export default class CoverallsCoverageReportCreator implements ReportGenerator {
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
         const sourceFiles = await Promise.all(
             deployment.details.runTestResult.codeCoverage.map((fileCoverage) =>
@@ -31,7 +38,7 @@ export default class CoverallsCoverageReportCreator implements ReportGenerator {
         const reportAsString = JSON.stringify(report);
         if (writeToDisc) {
             const outputPath =
-                process.env[ENV_REPORT_DIR] ??
+                this.env.getVar(ENV_VARS_NAMES.COVERALLS.LOCATION) ??
                 join(await getProjectRoot(process.cwd()), "deployment_reports", "coveralls.json");
             await mkdirs(dirname(outputPath));
             await promises.writeFile(outputPath, JSON.stringify(report));
@@ -42,7 +49,7 @@ export default class CoverallsCoverageReportCreator implements ReportGenerator {
     private async createSourceFileSummary(fileCodeCoverage: CodeCoverageResult): Promise<SourceFile> {
         const notCoveredLines = new Set<number>();
         //@ts-ignore
-        let greatestLineNumber = parseInt(fileCodeCoverage.numLocations ?? 6);
+        let greatestLineNumber = parseInt(fileCodeCoverage.numLocations);
         for (const lineCoverage of wrapInArray(fileCodeCoverage.locationsNotCovered)) {
             // @ts-ignore
             const lineNumber = parseInt(lineCoverage.line);

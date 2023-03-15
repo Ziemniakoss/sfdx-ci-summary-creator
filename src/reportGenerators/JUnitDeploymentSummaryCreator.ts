@@ -38,8 +38,13 @@ interface JUnitReport {
     };
 }
 
-export default class JUnitDeploymentSummaryCreator implements ReportGenerator {
-    constructor(private env: Environment) {}
+export default class JUnitDeploymentSummaryCreator extends ReportGenerator {
+    shouldBeDisabled(): boolean {
+        return this.env.getBooleanVar(ENV_VARS_NAMES.JUNIT_REPORT.DISABLED);
+    }
+    constructor(private env: Environment) {
+        super();
+    }
 
     private getOutputFile(): string {
         const varNameWithLocation = ENV_VARS_NAMES.JUNIT_REPORT.LOCATION;
