@@ -1,8 +1,8 @@
-import {ReportGenerator} from "./ReportGenerator";
-import {DeploymentResult, RunTestFailure, RunTestSuccess} from "../dataTypes/deployment";
+import { ReportGenerator } from "./ReportGenerator";
+import { DeploymentResult, RunTestFailure, RunTestSuccess } from "../dataTypes/deployment";
 import Environment from "../utils/Environment";
-import {ENV_VARS_NAMES} from "../utils/constants";
-import {bold, green, red, yellow} from "../utils/colorStrings";
+import { ENV_VARS_NAMES } from "../utils/constants";
+import { bold, green, red, yellow } from "../utils/colorStrings";
 
 const SUCCESS_SYMBOL = "✓";
 const FAILURE_SYMBOL = "X";
@@ -15,7 +15,7 @@ export default class ReadableConsoleReport extends ReportGenerator {
     }
 
     shouldBeDisabled(): boolean {
-        console.log(this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED))
+        console.log(this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED));
         return this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED);
     }
 
@@ -47,16 +47,16 @@ export default class ReadableConsoleReport extends ReportGenerator {
     }
 
     private async createDeploymentSection(deployment: DeploymentResult): Promise<string> {
-        const header = bold("# Deployment\n")
+        const header = bold("# Deployment\n");
         if (deployment.details.componentFailures.length == 0) {
             return header + `  ${deployment.details.componentSuccesses.length} components deployed successfully`;
         }
         const formattedErrorMessages = deployment.details.componentFailures.map((failure) => {
-            let formattedComponentName = red(failure.fileName)
+            let formattedComponentName = red(failure.fileName);
             if (failure.lineNumber != null) {
-                formattedComponentName += red(`:${failure.lineNumber}`)
+                formattedComponentName += red(`:${failure.lineNumber}`);
                 if (failure.columnNumber != null) {
-                    formattedComponentName += red(`:${failure.columnNumber}`)
+                    formattedComponentName += red(`:${failure.columnNumber}`);
                 }
             }
             return `${formattedComponentName}: ${failure.problem}`;
@@ -101,25 +101,22 @@ export default class ReadableConsoleReport extends ReportGenerator {
 
             let totalTime = 0;
             failures.forEach((failure) => {
-                const formattedMethodInfo =
-                    red(
-                        `    ${FAILURE_SYMBOL} ${failure.methodName} (${failure.time}ms): `)
+                const formattedMethodInfo = red(`    ${FAILURE_SYMBOL} ${failure.methodName} (${failure.time}ms): `);
                 const additionalInfo = `${failure.message}\n${this.formatStackTrace(failure.stackTrace)}`;
                 formattedMessages.push(formattedMethodInfo + additionalInfo);
                 totalTime += failure.time;
             });
             successes.forEach((success) => {
-                const formattedMessage = green(
-                    `    ${SUCCESS_SYMBOL} ${success.methodName} (${success.time}ms)`)
+                const formattedMessage = green(`    ${SUCCESS_SYMBOL} ${success.methodName} (${success.time}ms)`);
                 formattedMessages.push(formattedMessage);
                 // @ts-ignore
                 totalTime += success.time;
             });
             let classHeader;
             if (failures.length == 0) {
-                classHeader = green(`  ${className} (${totalTime}ms)\n`)
+                classHeader = green(`  ${className} (${totalTime}ms)\n`);
             } else {
-                classHeader = red( `  ${className} (${totalTime}ms)\n`)
+                classHeader = red(`  ${className} (${totalTime}ms)\n`);
             }
             report += classHeader + formattedMessages.join("\n") + "\n";
         }
@@ -145,7 +142,7 @@ export default class ReadableConsoleReport extends ReportGenerator {
         if (codeCoverageData.length == 0) {
             return "";
         }
-        const header = bold("$ Code Coverage\n")
+        const header = bold("$ Code Coverage\n");
 
         return (
             header +
@@ -161,11 +158,11 @@ export default class ReadableConsoleReport extends ReportGenerator {
                     coveredPercentage = Math.ceil(coveredPercentage);
                     let coverageMessage;
                     if (coveredPercentage == 75) {
-                        coverageMessage = yellow( "75%" )
+                        coverageMessage = yellow("75%");
                     } else if (coveredPercentage < 75) {
-                        coverageMessage = red(`${coveredPercentage}%`)
+                        coverageMessage = red(`${coveredPercentage}%`);
                     } else {
-                        coverageMessage = green(`${coveredPercentage}%`)
+                        coverageMessage = green(`${coveredPercentage}%`);
                     }
                     return `  ${coverageData.name}: ${coverageMessage}`;
                 })
@@ -178,7 +175,7 @@ export default class ReadableConsoleReport extends ReportGenerator {
         if (codeCoverageWarnings.length == 0) {
             return "";
         }
-        const header = bold("# Code Coverage Warnings\n")
+        const header = bold("# Code Coverage Warnings\n");
         return (
             header +
             codeCoverageWarnings
