@@ -14,6 +14,6 @@ const hook = async function () {
     if (areTimersEnabled) {
         indexingPromise.then(() => console.timeEnd(TIMER_NAME));
     }
-}
+};
 
-export default hook
+export default hook;

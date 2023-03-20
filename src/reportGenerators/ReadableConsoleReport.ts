@@ -25,7 +25,6 @@ export default class ReadableConsoleReport extends ReportGenerator {
      */
     async createReport(deployment: DeploymentResult, writeToDisc = true): Promise<string> {
         const report = await Promise.all([
-            this.createDeploymentPageLink(),
             this.getReportHeader(),
             this.createDeploymentSection(deployment),
             this.createTestExecutionSection(deployment),
@@ -39,9 +38,6 @@ export default class ReadableConsoleReport extends ReportGenerator {
         return report;
     }
 
-    private async createDeploymentPageLink() {
-
-    }
     private async getReportHeader() {
         return "==== START OF PRETTY REPORT ====";
     }
