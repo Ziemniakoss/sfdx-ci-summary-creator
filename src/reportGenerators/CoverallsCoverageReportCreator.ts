@@ -4,8 +4,8 @@ import { ReportGenerator } from "./ReportGenerator";
 import { CodeCoverageResult, DeploymentResult } from "../dataTypes/deployment";
 import { getProjectRoot, mkdirs, wrapInArray } from "../utils/utils";
 import Environment from "../utils/Environment";
-import {ENV_VARS_NAMES, FILE_EXTENSIONS, METADATA_TYPES} from "../utils/constants";
-import {getPathFromIndex} from "../utils/metadataIndex";
+import { ENV_VARS_NAMES, FILE_EXTENSIONS, METADATA_TYPES } from "../utils/constants";
+import { getPathFromIndex } from "../utils/metadataIndex";
 
 interface SourceFile {
     name: string;
@@ -74,10 +74,10 @@ export default class CoverallsCoverageReportCreator extends ReportGenerator {
         let fileToFind;
         if (fileCodeCoverage.type == METADATA_TYPES.APEX_CLASS) {
             fileToFind = `${fileCodeCoverage.name}.${FILE_EXTENSIONS.APEX_CLASS}`;
-            filePath = await getPathFromIndex(fileToFind)
+            filePath = await getPathFromIndex(fileToFind);
         } else if (fileCodeCoverage.type == METADATA_TYPES.APEX_TRIGGER) {
             fileToFind = `${fileCodeCoverage.name}.${FILE_EXTENSIONS.APEX_TRIGGER}`;
-            filePath = await getPathFromIndex(fileToFind)
+            filePath = await getPathFromIndex(fileToFind);
         } else {
             fileToFind = `${fileCodeCoverage.type}/${fileCodeCoverage.name}`;
         }
