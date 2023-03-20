@@ -33,6 +33,11 @@ export const ENV_VARS_NAMES = {
         UNIT_TEST_TIME_ERROR_LEVEL: `${PREFIX}CONSOLE_TIME_ERROR`,
     } as const,
     COMMON: {
+        /**
+         * Link to org that code is deployed to.
+         * Used for example to generate link to deployment page
+         */
+        ORG_LINK: `${PREFIX}ORG_LINK`,
         SHOW_FAILED_DUE_TO_DEPENDENT: "CI_SUMMARY_SHOW_DEPENDENT_ERRORS",
         /**
          * Location which is checked by GitHub for markdown files
