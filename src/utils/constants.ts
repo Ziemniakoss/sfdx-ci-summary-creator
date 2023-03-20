@@ -1,4 +1,4 @@
-const PREFIX = "CI_SUMMARY_";
+export const PREFIX = "CI_SUMMARY_";
 export const ENV_VARS_NAMES = {
     JUNIT_REPORT: {
         LOCATION: `${PREFIX}JUNIT_LOCATION`,
@@ -26,6 +26,11 @@ export const ENV_VARS_NAMES = {
      */
     CONSOLE: {
         DISABLED: `${PREFIX}CONSOLE_DISABLED`,
+        UNIT_TEST_TIME_WARNING_LEVEL: `${PREFIX}CONSOLE_TIME_WARNING`,
+        /**
+         * Time in milliseconds form which time of unit test is marked as red
+         */
+        UNIT_TEST_TIME_ERROR_LEVEL: `${PREFIX}CONSOLE_TIME_ERROR`,
     } as const,
     COMMON: {
         SHOW_FAILED_DUE_TO_DEPENDENT: "CI_SUMMARY_SHOW_DEPENDENT_ERRORS",
@@ -34,5 +39,21 @@ export const ENV_VARS_NAMES = {
          * that will be displayed as summary of step
          */
         GITHUB_STEP_SUMMARY: "GITHUB_STEP_SUMMARY",
+        /**
+         * Enable timers measuring time of:
+         * - indexing
+         * - report generation
+         */
+        ENABLE_TIMERS: `${PREFIX}ENABLE_TIMERS`,
     } as const,
+} as const;
+
+export const METADATA_TYPES = {
+    APEX_CLASS: "Class",
+    APEX_TRIGGER: "Trigger",
+} as const;
+
+export const FILE_EXTENSIONS = {
+    APEX_CLASS: "cls",
+    APEX_TRIGGER: "trigger",
 } as const;

@@ -1,5 +1,9 @@
 import { existsSync, mkdirSync, promises } from "fs";
-import { dirname, join, basename } from "path";
+import { dirname, join, relative } from "path";
+import { getPathFromIndex } from "./metadataIndex";
+import { FILE_EXTENSIONS } from "./constants";
+
+const PROJECT_DEFINITION_FILE_NAME = "sfdx-project.json";
 
 export function mkdirs(path: string) {
     const parentDir = dirname(path);
@@ -28,10 +32,10 @@ export async function getProjectRoot(searchStartPath: string): Promise<string> {
     return getProjectRoot(dirname(searchStartPath));
 }
 
-async function getProjectDirectories(): Promise<string[]> {
+export async function getProjectDirectories(): Promise<string[]> {
     const rootProjectDirectory = await getProjectRoot(process.cwd());
     return promises
-        .readFile(join(rootProjectDirectory, "sfdx-project.json"), "utf-8")
+        .readFile(join(rootProjectDirectory, PROJECT_DEFINITION_FILE_NAME), "utf-8")
         .then(JSON.parse)
         .then((projectDefinition) => {
             return projectDefinition.packageDirectories.map((projectDir) =>
@@ -40,40 +44,32 @@ async function getProjectDirectories(): Promise<string[]> {
         });
 }
 
-/**
- * In normal SFDX command, we would have project object which has fast
- * project directories discovery. Because we are working from level of hook,
- * we need to cache this promise to speed up process (basically we are looking
- * for project directories only once)
- */
-let sharedProjectDirectoriesDiscoveryPromise: Promise<string[]>;
-export async function findFile(fileName: string): Promise<string | null> {
-    if (sharedProjectDirectoriesDiscoveryPromise == null) {
-        sharedProjectDirectoriesDiscoveryPromise = getProjectDirectories();
+export async function formatStackTrace(stackTrace: string) {
+    if (stackTrace == null) {
+        return "";
     }
-    const projectDirectories = await sharedProjectDirectoriesDiscoveryPromise;
-    for (const projectDir of projectDirectories) {
-        const foundFileInDir = await findFileInDirectory(fileName, projectDir);
-        if (foundFileInDir != null) {
-            return foundFileInDir;
-        }
-    }
-    return null;
+    const stackEntries = stackTrace.replace("\n\r", "\n").split("\n");
+    const stack = await Promise.all(stackEntries.map((entry) => formatStackEntry(entry))).then((formattedEntries) =>
+        formattedEntries.join("\n")
+    );
+    return "\n" + stack;
 }
 
-async function findFileInDirectory(fileName: string, directory: string): Promise<string | null> {
-    const dirContent = await promises.readdir(directory).then((files) => files.map((file) => join(directory, file)));
-    const contentsWithProps = await Promise.all(dirContent.map((file) => ({ file, properties: promises.lstat(file) })));
-    const dirs = [];
-    for (const p of contentsWithProps) {
-        const properties = await p.properties;
-        if (properties.isDirectory()) {
-            dirs.push(p.file);
-        } else if (properties.isFile() && basename(p.file) == fileName) {
-            return p.file;
-        }
+const INDENT = "        ";
+
+async function formatStackEntry(stackEntry: string): Promise<string> {
+    stackEntry = stackEntry.trim();
+    if (!stackEntry.startsWith("Class.")) {
+        return `${INDENT}${stackEntry}`;
     }
 
-    const foundFilesInSubdirs = await Promise.all(dirs.map((dirName) => findFileInDirectory(fileName, dirName)));
-    return foundFilesInSubdirs.find((file) => file != null);
+    const [fullEntityName, _empty1, _line, lineNumber] = stackEntry.replace(",", " ").replace(":", " ").split(" ");
+    const [_entityType, entityName, method] = fullEntityName.split(".");
+    const nameInIndex = `${entityName}.${FILE_EXTENSIONS.APEX_CLASS}`;
+    const path = await getPathFromIndex(nameInIndex);
+    if (path != null) {
+        const relativePath = relative(process.cwd(), path);
+        return `${INDENT}${relativePath}:${lineNumber} in method ${method}`;
+    }
+    return `${INDENT}${stackEntry}`;
 }

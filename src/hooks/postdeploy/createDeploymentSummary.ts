@@ -13,12 +13,17 @@ interface PostDeploymentEvent {
     };
 }
 
+const TIMER_NAME = "CIRC: report generation time";
 const hook = async function (event: PostDeploymentEvent) {
     const env = new Environment();
     const showDependentErrors = Boolean(env.getVar(ENV_VARS_NAMES.COMMON.SHOW_FAILED_DUE_TO_DEPENDENT));
     const deploymentResult = preprocess(event?.result?.response, !showDependentErrors);
     if (deploymentResult == null) {
         return;
+    }
+    const isTimerEnabled = env.getBooleanVar(ENV_VARS_NAMES.COMMON.ENABLE_TIMERS);
+    if (isTimerEnabled) {
+        console.time(TIMER_NAME);
     }
     const promises: Promise<any>[] = [
         new MarkdownDeploymentSummaryCreator(env),
@@ -34,6 +39,11 @@ const hook = async function (event: PostDeploymentEvent) {
             .catch(printError)
             // Just in case
             .catch(() => {})
+            .finally(() => {
+                if (isTimerEnabled) {
+                    console.timeEnd(TIMER_NAME);
+                }
+            })
     );
 };
 

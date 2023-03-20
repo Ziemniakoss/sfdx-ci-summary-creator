@@ -3,6 +3,7 @@ import { DeploymentResult, RunTestFailure, RunTestSuccess } from "../dataTypes/d
 import Environment from "../utils/Environment";
 import { ENV_VARS_NAMES } from "../utils/constants";
 import { bold, green, red, yellow } from "../utils/colorStrings";
+import { formatStackTrace } from "../utils/utils";
 
 const SUCCESS_SYMBOL = "✓";
 const FAILURE_SYMBOL = "X";
@@ -15,7 +16,6 @@ export default class ReadableConsoleReport extends ReportGenerator {
     }
 
     shouldBeDisabled(): boolean {
-        console.log(this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED));
         return this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED);
     }
 
@@ -100,12 +100,13 @@ export default class ReadableConsoleReport extends ReportGenerator {
             const formattedMessages = [];
 
             let totalTime = 0;
-            failures.forEach((failure) => {
+            for (const failure of failures) {
                 const formattedMethodInfo = red(`    ${FAILURE_SYMBOL} ${failure.methodName} (${failure.time}ms): `);
-                const additionalInfo = `${failure.message}\n${this.formatStackTrace(failure.stackTrace)}`;
+                const stackTrace = await this.formatStackTrace(failure.stackTrace);
+                const additionalInfo = `${failure.message}\n${stackTrace}`;
                 formattedMessages.push(formattedMethodInfo + additionalInfo);
                 totalTime += failure.time;
-            });
+            }
             successes.forEach((success) => {
                 const formattedMessage = green(`    ${SUCCESS_SYMBOL} ${success.methodName} (${success.time}ms)`);
                 formattedMessages.push(formattedMessage);
@@ -123,18 +124,8 @@ export default class ReadableConsoleReport extends ReportGenerator {
         return header + report;
     }
 
-    private formatStackTrace(stackTrace: string): string {
-        if (stackTrace == null) {
-            return "";
-        }
-        return (
-            "\n" +
-            stackTrace
-                .replace("\n\r", "\n")
-                .split("\n")
-                .map((stackEntry) => `        ${stackEntry}`)
-                .join("\n")
-        );
+    private async formatStackTrace(stackTrace: string): Promise<string> {
+        return formatStackTrace(stackTrace);
     }
 
     private async createCoverageSection(deployment: DeploymentResult): Promise<string> {
@@ -142,7 +133,7 @@ export default class ReadableConsoleReport extends ReportGenerator {
         if (codeCoverageData.length == 0) {
             return "";
         }
-        const header = bold("$ Code Coverage\n");
+        const header = bold("# Code Coverage\n");
 
         return (
             header +

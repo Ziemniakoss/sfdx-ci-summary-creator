@@ -2,9 +2,10 @@ import { promises } from "fs";
 import { join, dirname } from "path";
 import { ReportGenerator } from "./ReportGenerator";
 import { CodeCoverageResult, DeploymentResult } from "../dataTypes/deployment";
-import { findFile, getProjectRoot, mkdirs, wrapInArray } from "../utils/utils";
+import { getProjectRoot, mkdirs, wrapInArray } from "../utils/utils";
 import Environment from "../utils/Environment";
-import { ENV_VARS_NAMES } from "../utils/constants";
+import { ENV_VARS_NAMES, FILE_EXTENSIONS, METADATA_TYPES } from "../utils/constants";
+import { getPathFromIndex } from "../utils/metadataIndex";
 
 interface SourceFile {
     name: string;
@@ -71,12 +72,12 @@ export default class CoverallsCoverageReportCreator extends ReportGenerator {
         }
         let filePath;
         let fileToFind;
-        if (fileCodeCoverage.type == "Class") {
-            fileToFind = `${fileCodeCoverage.name}.cls`;
-            filePath = await findFile(fileToFind);
-        } else if (fileCodeCoverage.type == "Trigger") {
-            fileToFind = `${fileCodeCoverage.name}.trigger`;
-            filePath = await findFile(fileToFind);
+        if (fileCodeCoverage.type == METADATA_TYPES.APEX_CLASS) {
+            fileToFind = `${fileCodeCoverage.name}.${FILE_EXTENSIONS.APEX_CLASS}`;
+            filePath = await getPathFromIndex(fileToFind);
+        } else if (fileCodeCoverage.type == METADATA_TYPES.APEX_TRIGGER) {
+            fileToFind = `${fileCodeCoverage.name}.${FILE_EXTENSIONS.APEX_TRIGGER}`;
+            filePath = await getPathFromIndex(fileToFind);
         } else {
             fileToFind = `${fileCodeCoverage.type}/${fileCodeCoverage.name}`;
         }

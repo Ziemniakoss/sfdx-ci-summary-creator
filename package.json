@@ -40,6 +40,9 @@
         "hooks": {
             "postdeploy": [
                 "./lib/hooks/postdeploy/createDeploymentSummary.js"
+            ],
+            "predeploy": [
+                "./lib/hooks/predeploy/startIndexing.js"
             ]
         },
         "bin": "sfdx",
