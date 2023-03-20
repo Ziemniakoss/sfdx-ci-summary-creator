@@ -15,7 +15,6 @@ export default class ReadableConsoleReport extends ReportGenerator {
     }
 
     shouldBeDisabled(): boolean {
-        console.log(this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED));
         return this.env.getBooleanVar(ENV_VARS_NAMES.CONSOLE.DISABLED);
     }
 
