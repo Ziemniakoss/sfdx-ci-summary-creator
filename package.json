@@ -42,7 +42,8 @@
                 "./lib/hooks/postdeploy/createDeploymentSummary.js"
             ],
             "predeploy": [
-                "./lib/hooks/predeploy/startIndexing.js"
+                "./lib/hooks/predeploy/startIndexing.js",
+                "./lib/hooks/predeploy/printDeploymentLink.js"
             ]
         },
         "bin": "sfdx",

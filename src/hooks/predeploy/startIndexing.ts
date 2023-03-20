@@ -4,7 +4,7 @@ import { ENV_VARS_NAMES } from "../../utils/constants";
 
 const TIMER_NAME = "CIRC: metadata indexing time";
 
-export async function hook() {
+const hook = async function () {
     const env = new Environment();
     const areTimersEnabled = env.getBooleanVar(ENV_VARS_NAMES.COMMON.ENABLE_TIMERS);
     if (areTimersEnabled) {
@@ -14,4 +14,6 @@ export async function hook() {
     if (areTimersEnabled) {
         indexingPromise.then(() => console.timeEnd(TIMER_NAME));
     }
-}
+};
+
+export default hook;
