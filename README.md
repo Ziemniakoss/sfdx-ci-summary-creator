@@ -45,6 +45,34 @@ If needed, console report can be also generated with colors encoded using ANSI c
 
 ![Image showing console report](images/console_report.png)
 
+## Installation
+
+To install plugin using npm (recommended), type:
+
+```sh
+sfdx plugins:intstall sfdx-ci-summary-creator
+```
+
+You can also install it from source, by fetching this repository using git and running
+
+```sh
+sfdx plugins:link
+```
+
+in project folder.
+
+## Usage
+
+This plugin contains only implementations for deployment hooks.
+This means that you don't need to change commands that you are using for deployments.
+After command like:
+
+```sh
+sfdx force:source:deploy
+```
+
+is run, sfdx will launch hooks that will generate reports by itself.
+
 ## Configuration
 
 All environmental variables that control behaviour of this plugin can be found in file [constants.ts](src/utils/constants.ts).
